@@ -1,0 +1,4 @@
+dist
+migrations
+coverage
+babel.config.js

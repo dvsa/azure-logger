@@ -1,0 +1,23 @@
+{
+  "extends": "@dvsa/eslint-config-ts",
+  "parserOptions": {
+    "project": "./tsconfig.eslint.json"
+  },
+  "rules": {
+    "class-methods-use-this": "off",
+    "@typescript-eslint/interface-name-prefix": "off"
+  },
+  "overrides": [
+    {
+      "files": [
+        "**/*.spec.ts"
+      ],
+      "rules": {
+        "@typescript-eslint/unbound-method": "off",
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/explicit-function-return-type": "off",
+        "security/detect-object-injection": "off"
+      }
+    }
+  ]
+}
