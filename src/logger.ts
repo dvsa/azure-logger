@@ -1,6 +1,6 @@
 import winston, { Logger as WinstonLogger } from 'winston';
 import config from './config';
-import { ILogger } from '../';
+import { ILogger } from '..';
 
 export enum LOG_LEVELS {
   CRITICAL = 'crit',
@@ -13,10 +13,9 @@ export enum LOG_LEVELS {
 }
 
 class Logger implements ILogger {
-  
   private loggerInstance: WinstonLogger;
 
-  static get Instance() {
+  static get Instance(): Logger {
     return new Logger();
   }
 
@@ -37,71 +36,70 @@ class Logger implements ILogger {
       levels: customLevels,
       format: winston.format.combine(
         winston.format.timestamp({
-          format: 'YYYY-MM-DD HH:mm:ss'
+          format: 'YYYY-MM-DD HH:mm:ss',
         }),
         winston.format.errors({ stack: true }),
         winston.format.splat(),
-        winston.format.json()
+        winston.format.json(),
       ),
       transports,
     });
   }
-    
-  critical(message: string, ...optionalParams: any[]): void {
+
+  critical(message: string, ...optionalParams: object[]): void {
     this.loggerInstance.log(LOG_LEVELS.CRITICAL, message, ...optionalParams);
   }
 
-  debug(message: string, ...optionalParams: any[]): void {
+  debug(message: string, ...optionalParams: object[]): void {
     this.loggerInstance.log(LOG_LEVELS.DEBUG, message, ...optionalParams);
   }
-  
-  audit(message: string, ...optionalParams: any[]): void {
+
+  audit(message: string, ...optionalParams: object[]): void {
     this.loggerInstance.log(LOG_LEVELS.AUDIT, message, ...optionalParams);
-  }  
-    
-  security(message: string, ...optionalParams: any[]): void {
+  }
+
+  security(message: string, ...optionalParams: object[]): void {
     this.loggerInstance.log(LOG_LEVELS.SECURITY, message, ...optionalParams);
   }
 
-  error(message: string, ...optionalParams: any[]): void {
+  error(message: string, ...optionalParams: object[]): void {
     this.loggerInstance.error(message, ...optionalParams);
   }
 
-  info(message: string, ...optionalParams: any[]): void {
+  info(message: string, ...optionalParams: object[]): void {
     this.loggerInstance.info(message, ...optionalParams);
   }
 
-  log(message: string, ...optionalParams: any[]): void {
+  log(message: string, ...optionalParams: object[]): void {
     this.loggerInstance.log(LOG_LEVELS.INFO, message, ...optionalParams);
   }
 
-  warn(message: string, ...optionalParams: any[]): void {
+  warn(message: string, ...optionalParams: object[]): void {
     this.loggerInstance.warn(message, ...optionalParams);
   }
-  
-  private getWinstonTransports() {
-    const transports = [];
 
-    if(config.developmentMode) {
+  private getWinstonTransports(): object[] {
+    const transports: object[] = [];
+
+    if (config.developmentMode) {
       transports.push(
         new winston.transports.Console({
           format: winston.format.simple(),
-          level: config.logs.level
-        })
-      )
+          level: config.logs.level,
+        }),
+      );
     } else {
       transports.push(
         new winston.transports.Console({
           format: winston.format.simple(),
           level: config.logs.level,
-        })
+        }),
 
-      )
+      );
     }
 
     return transports;
   }
-  
 }
 
 export default Logger;

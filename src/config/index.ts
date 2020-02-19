@@ -11,9 +11,9 @@ if (result.error) {
 
 export default {
 
-    logs: {
-        level: process.env.LOG_LEVEL,
-    },
+  logs: {
+    level: process.env.LOG_LEVEL,
+  },
 
   /**
    * Development mode

@@ -1,118 +1,117 @@
 import winston from 'winston';
-import { Logger } from '.'
+import { Logger } from '.';
 import { LOG_LEVELS } from './logger';
 
-describe('Logger', ()=> {
+describe('Logger', () => {
+  let loggerInstance: Logger;
+  let mockCreateLogger;
+  const mockLogger: any = {
+    error: jest.fn(),
+    debug: jest.fn(),
+    info: jest.fn(),
+    log: jest.fn(),
+    warn: jest.fn(),
+  };
 
-    let loggerInstance: Logger;
-    let mockCreateLogger;
-    let mockLogger: any = {
-        error: jest.fn(),
-        debug: jest.fn(),
-        info: jest.fn(),
-        log: jest.fn(),
-        warn: jest.fn(),
-    };
+  beforeAll(() => {
+    mockCreateLogger = jest.spyOn(winston, 'createLogger');
+    mockCreateLogger.mockImplementation(() => mockLogger);
+    loggerInstance = Logger.Instance;
+  });
 
-    beforeAll(() => {
-        mockCreateLogger = jest.spyOn(winston, 'createLogger');
-        mockCreateLogger.mockImplementation(() => mockLogger)
-        loggerInstance = Logger.Instance;
-    });
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
 
-    afterEach(() => {
-        jest.clearAllMocks();
-    })
+  afterAll(() => {
+    jest.restoreAllMocks();
+  });
 
-    afterAll(() => {
-        jest.restoreAllMocks();
-    })
+  test('critical logs', () => {
+    // arrange
+    const message = 'Critical log';
 
-    test('critical logs', () => {
-        // arrange
-        const message = 'Critical log';
+    // act
+    loggerInstance.critical(message);
 
-        // act
-        loggerInstance.critical(message);
-    
-        // assert
-        expect(mockLogger.log).toHaveBeenCalledWith(LOG_LEVELS.CRITICAL, message);
-    })
+    // assert
+    expect(mockLogger.log).toHaveBeenCalledWith(LOG_LEVELS.CRITICAL, message);
+  });
 
-    test('debug logs', () => {
-        // arrange
-        const message = 'Debug log';
+  test('debug logs', () => {
+    // arrange
+    const message = 'Debug log';
 
-        // act
-        loggerInstance.debug(message);
-    
-        // assert
-        expect(mockLogger.log).toHaveBeenCalledWith(LOG_LEVELS.DEBUG, message);
-    });
+    // act
+    loggerInstance.debug(message);
 
-    test('audit logs', () => {
-        // arrange
-        const message = 'Audit log';
+    // assert
+    expect(mockLogger.log).toHaveBeenCalledWith(LOG_LEVELS.DEBUG, message);
+  });
 
-        // act
-        loggerInstance.audit(message);
-    
-        // assert
-        expect(mockLogger.log).toHaveBeenCalledWith(LOG_LEVELS.AUDIT, message);
-    });
+  test('audit logs', () => {
+    // arrange
+    const message = 'Audit log';
 
-    test('security logs', () => {
-        // arrange
-        const message = 'Audit log';
+    // act
+    loggerInstance.audit(message);
 
-        // act
-        loggerInstance.security(message);
-    
-        // assert
-        expect(mockLogger.log).toHaveBeenCalledWith(LOG_LEVELS.SECURITY, message);
-    });
+    // assert
+    expect(mockLogger.log).toHaveBeenCalledWith(LOG_LEVELS.AUDIT, message);
+  });
 
-    test('error logs', () => {
-        // arrange
-        const message = 'Error log';
+  test('security logs', () => {
+    // arrange
+    const message = 'Audit log';
 
-        // act
-        loggerInstance.error(message);
-    
-        // assert
-        expect(mockLogger.error).toHaveBeenCalledWith(message);
-    });
+    // act
+    loggerInstance.security(message);
 
-    test('info logs', () => {
-        // arrange
-        const message = 'Info log';
+    // assert
+    expect(mockLogger.log).toHaveBeenCalledWith(LOG_LEVELS.SECURITY, message);
+  });
 
-        // act
-        loggerInstance.info(message);
-    
-        // assert
-        expect(mockLogger.info).toHaveBeenCalledWith(message);
-    });
+  test('error logs', () => {
+    // arrange
+    const message = 'Error log';
 
-    test('log logs', () => {
-        // arrange
-        const message = 'Log log';
+    // act
+    loggerInstance.error(message);
 
-        // act
-        loggerInstance.log(message);
-    
-        // assert
-        expect(mockLogger.log).toHaveBeenCalledWith(LOG_LEVELS.INFO, message);
-    });
+    // assert
+    expect(mockLogger.error).toHaveBeenCalledWith(message);
+  });
 
-    test('warn logs', () => {
-        // arrange
-        const message = 'Warn log';
+  test('info logs', () => {
+    // arrange
+    const message = 'Info log';
 
-        // act
-        loggerInstance.warn(message);
-    
-        // assert
-        expect(mockLogger.warn).toHaveBeenCalledWith(message);
-    });
-})
+    // act
+    loggerInstance.info(message);
+
+    // assert
+    expect(mockLogger.info).toHaveBeenCalledWith(message);
+  });
+
+  test('log logs', () => {
+    // arrange
+    const message = 'Log log';
+
+    // act
+    loggerInstance.log(message);
+
+    // assert
+    expect(mockLogger.log).toHaveBeenCalledWith(LOG_LEVELS.INFO, message);
+  });
+
+  test('warn logs', () => {
+    // arrange
+    const message = 'Warn log';
+
+    // act
+    loggerInstance.warn(message);
+
+    // assert
+    expect(mockLogger.warn).toHaveBeenCalledWith(message);
+  });
+});
