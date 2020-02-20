@@ -112,6 +112,6 @@ describe('Logger', () => {
     loggerInstance.warn(message);
 
     // assert
-    expect(mockLogger.warn).toHaveBeenCalledWith(message);
+    expect(mockLogger.log).toHaveBeenCalledWith(LOG_LEVELS.WARNING, message);
   });
 });

@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface ILogger {
-  critical(message: string, ...optionalParams: object[]): void;
-  error(message: string, ...optionalParams: object[]): void;
-  warn(message: string, ...optionalParams: object[]): void;
-  info(message: string, ...optionalParams: object[]): void;
-  debug(message: string, ...optionalParams: object[]): void;
-  log(message: string, ...optionalParams: object[]): void;
-  audit(message: string, ...optionalParams: object[]): void;
-  security(message: string, ...optionalParams: object[]): void;
+  critical(message: string, ...optionalParams: any[]): void;
+  error(message: string, ...optionalParams: any[]): void;
+  warn(message: string, ...optionalParams: any[]): void;
+  info(message: string, ...optionalParams: any[]): void;
+  debug(message: string, ...optionalParams: any[]): void;
+  log(message: string, ...optionalParams: any[]): void;
+  audit(message: string, ...optionalParams: any[]): void;
+  security(message: string, ...optionalParams: any[]): void;
 }
