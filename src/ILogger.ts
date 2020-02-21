@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-export interface ILogger {
+export default interface ILogger {
   critical(message: string, ...optionalParams: any[]): void;
   error(message: string, ...optionalParams: any[]): void;
   warn(message: string, ...optionalParams: any[]): void;

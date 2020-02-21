@@ -1,5 +1,5 @@
 # Logger
-Dvsa FTTS uses Winston as the logging facade. 
+Dvsa FTTS uses Winston as the logging facade.
 
 ## Usage
 Firstly, install the library
@@ -20,20 +20,16 @@ LOG_LEVEL=debug
 NODE_ENV=development
 ```
 
-Import the logger
+Import the logger (singleton instance)
 ```typescript
-import { Logger } from '@dvsa/azure-logger';
-
-// create an instance
-const loggerInstance = Logger.Instance;
+import { logger } from '@dvsa/azure-logger';
 
 // do some logging!
-loggerInstance.log('Hello World');
-loggerInstance.error('Error %o', err);
+logger.log('Hello World');
+logger.error('Error %o', err);
 ```
 
-## Logging Levels
-
+### Logging levels
  * critical
  * error
  * warn

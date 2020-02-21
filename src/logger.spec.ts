@@ -1,6 +1,5 @@
 import winston from 'winston';
-import { Logger } from '.';
-import { LOG_LEVELS } from './logger';
+import Logger, { LOG_LEVELS } from './Logger';
 
 describe('Logger', () => {
   let loggerInstance: Logger;
@@ -16,7 +15,7 @@ describe('Logger', () => {
   beforeAll(() => {
     mockCreateLogger = jest.spyOn(winston, 'createLogger');
     mockCreateLogger.mockImplementation(() => mockLogger);
-    loggerInstance = Logger.Instance;
+    loggerInstance = new Logger();
   });
 
   afterEach(() => {

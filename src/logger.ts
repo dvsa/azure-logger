@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import winston, { Logger as WinstonLogger } from 'winston';
 import config from './config';
-import { ILogger } from '..';
+import ILogger from './ILogger';
 
 export enum LOG_LEVELS {
   CRITICAL = 'crit',
@@ -15,10 +15,6 @@ export enum LOG_LEVELS {
 
 class Logger implements ILogger {
   private loggerInstance: WinstonLogger;
-
-  static get Instance(): Logger {
-    return new Logger();
-  }
 
   constructor() {
     const transports = this.getWinstonTransports();
