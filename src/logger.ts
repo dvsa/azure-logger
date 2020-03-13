@@ -27,30 +27,16 @@ class Logger implements ILogger {
       [LOG_LEVELS.SECURITY]: 5,
       [LOG_LEVELS.AUDIT]: 6,
     };
-    const customColors = {
-      [LOG_LEVELS.CRITICAL]: 'red',
-      [LOG_LEVELS.ERROR]: 'red',
-      [LOG_LEVELS.WARNING]: 'yellow',
-      [LOG_LEVELS.INFO]: 'white',
-      [LOG_LEVELS.DEBUG]: 'white',
-      [LOG_LEVELS.SECURITY]: 'white',
-      [LOG_LEVELS.AUDIT]: 'white',
-    };
 
     this.loggerInstance = winston.createLogger({
       level: config.logs.level,
       levels: customLevels,
       format: winston.format.combine(
-        winston.format.timestamp({
-          format: 'YYYY-MM-DD HH:mm:ss',
-        }),
         winston.format.splat(),
         winston.format.json(),
-        winston.format.colorize(),
       ),
       transports,
     });
-    winston.addColors(customColors);
   }
 
   critical(message: string, ...optionalParams: any[]): void {
