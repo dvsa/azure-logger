@@ -2,6 +2,7 @@
 import winston, { Logger as WinstonLogger } from 'winston';
 import config from './config';
 import ILogger from './ILogger';
+import { ApplicationInsightsTransport } from './applicationInsightsTransport';
 
 export enum LOG_LEVELS {
   CRITICAL = 'crit',
@@ -80,6 +81,10 @@ class Logger implements ILogger {
           format: winston.format.simple(),
           level: config.logs.level,
         }),
+        new ApplicationInsightsTransport({
+          key: config.applicationInsights.key,
+          level: config.logs.level,
+        }),
       );
     } else {
       transports.push(
@@ -87,7 +92,10 @@ class Logger implements ILogger {
           format: winston.format.simple(),
           level: config.logs.level,
         }),
-
+        new ApplicationInsightsTransport({
+          key: config.applicationInsights.key,
+          level: config.logs.level,
+        }),
       );
     }
 
