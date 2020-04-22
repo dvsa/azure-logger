@@ -4,7 +4,7 @@ import Transport from 'winston-transport';
 
 import { ApplicationInsightsTransportOptions } from './interfaces';
 
-export class ApplicationInsightsTransport extends Transport {
+class ApplicationInsightsTransport extends Transport {
   private client: TelemetryClient;
 
   constructor(options: ApplicationInsightsTransportOptions) {
@@ -30,3 +30,5 @@ export class ApplicationInsightsTransport extends Transport {
     });
   }
 }
+
+export default ApplicationInsightsTransport;

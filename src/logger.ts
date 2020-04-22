@@ -2,7 +2,7 @@
 import winston, { Logger as WinstonLogger } from 'winston';
 import config from './config';
 import ILogger from './ILogger';
-import { ApplicationInsightsTransport } from './applicationInsightsTransport';
+import ApplicationInsightsTransport from './applicationInsightsTransport';
 
 export enum LOG_LEVELS {
   CRITICAL = 'crit',

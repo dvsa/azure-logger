@@ -1,5 +1,16 @@
 import winston from 'winston';
-import Logger, { LOG_LEVELS } from './Logger';
+import Logger, { LOG_LEVELS } from '../../src/logger';
+import ApplicationInsightsTransport from '../../src/applicationInsightsTransport';
+
+jest.mock('../../src/applicationInsightsTransport');
+jest.mock('../../src/config', () => ({
+  logs: {
+    level: 'DEBUG',
+  },
+  applicationInsights: {
+    key: '123-456-789',
+  },
+}));
 
 describe('Logger', () => {
   let loggerInstance: Logger;
@@ -16,6 +27,7 @@ describe('Logger', () => {
     mockCreateLogger = jest.spyOn(winston, 'createLogger');
     mockCreateLogger.mockImplementation(() => mockLogger);
     loggerInstance = new Logger();
+    jest.mock('../../src/applicationInsightsTransport');
   });
 
   afterEach(() => {
@@ -24,6 +36,17 @@ describe('Logger', () => {
 
   afterAll(() => {
     jest.restoreAllMocks();
+  });
+
+  test('configures application insights', () => {
+    // act
+    loggerInstance.log('Test Log');
+
+    // assert
+    expect(ApplicationInsightsTransport).toHaveBeenCalledWith({
+      level: 'DEBUG',
+      key: '123-456-789',
+    });
   });
 
   test('critical logs', () => {
