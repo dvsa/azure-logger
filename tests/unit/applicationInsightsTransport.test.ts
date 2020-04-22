@@ -7,10 +7,6 @@ jest.mock('applicationinsights', () => ({
 }));
 
 describe('ApplicationInsightsTransport', () => {
-
-  beforeEach(() => {
-  });
-
   describe('constructor', () => {
     test('should use the client if one has been provided', () => {
       // Arrange + Act

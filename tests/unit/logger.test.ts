@@ -27,7 +27,6 @@ describe('Logger', () => {
     mockCreateLogger = jest.spyOn(winston, 'createLogger');
     mockCreateLogger.mockImplementation(() => mockLogger);
     loggerInstance = new Logger();
-    jest.mock('../../src/applicationInsightsTransport');
   });
 
   afterEach(() => {
