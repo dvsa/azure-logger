@@ -5,7 +5,7 @@ import Transport from 'winston-transport';
 import { ApplicationInsightsTransportOptions } from './interfaces';
 
 class ApplicationInsightsTransport extends Transport {
-  private client: TelemetryClient;
+  client: TelemetryClient;
 
   constructor(options: ApplicationInsightsTransportOptions) {
     super(options);
@@ -16,10 +16,6 @@ class ApplicationInsightsTransport extends Transport {
     } else {
       setup(options.key).start();
       this.client = defaultClient;
-    }
-
-    if (!this.client) {
-      throw new Error('No Application Insights client instance found');
     }
   }
 
