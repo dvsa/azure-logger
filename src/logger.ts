@@ -1,23 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import winston, { Logger as WinstonLogger } from 'winston';
+import Transport from 'winston-transport';
 import config from './config';
 import ILogger from './ILogger';
 import ApplicationInsightsTransport from './applicationInsightsTransport';
-
-export enum LOG_LEVELS {
-  CRITICAL = 'crit',
-  ERROR = 'error',
-  WARNING = 'warning',
-  INFO = 'info',
-  DEBUG = 'debug',
-  SECURITY = 'security',
-  AUDIT = 'audit'
-}
+import { LOG_LEVELS } from './enums';
 
 class Logger implements ILogger {
   private loggerInstance: WinstonLogger;
 
-  constructor() {
+  constructor(private projectName: string, private componentName: string) {
     const transports = this.getWinstonTransports();
     const customLevels = {
       [LOG_LEVELS.CRITICAL]: 0,
@@ -41,39 +33,71 @@ class Logger implements ILogger {
   }
 
   critical(message: string, ...optionalParams: any[]): void {
-    this.loggerInstance.log(LOG_LEVELS.CRITICAL, message, ...optionalParams);
+    this.loggerInstance.log(LOG_LEVELS.CRITICAL, message, {
+      projectName: this.projectName,
+      componentName: this.componentName,
+      ...optionalParams,
+    });
   }
 
   debug(message: string, ...optionalParams: any[]): void {
-    this.loggerInstance.log(LOG_LEVELS.DEBUG, message, ...optionalParams);
+    this.loggerInstance.log(LOG_LEVELS.DEBUG, message, {
+      projectName: this.projectName,
+      componentName: this.componentName,
+      ...optionalParams,
+    });
   }
 
   audit(message: string, ...optionalParams: any[]): void {
-    this.loggerInstance.log(LOG_LEVELS.AUDIT, message, ...optionalParams);
+    this.loggerInstance.log(LOG_LEVELS.AUDIT, message, {
+      projectName: this.projectName,
+      componentName: this.componentName,
+      ...optionalParams,
+    });
   }
 
   security(message: string, ...optionalParams: any[]): void {
-    this.loggerInstance.log(LOG_LEVELS.SECURITY, message, ...optionalParams);
+    this.loggerInstance.log(LOG_LEVELS.SECURITY, message, {
+      projectName: this.projectName,
+      componentName: this.componentName,
+      ...optionalParams,
+    });
   }
 
   error(message: string, ...optionalParams: any[]): void {
-    this.loggerInstance.error(message, ...optionalParams);
+    this.loggerInstance.error(message, {
+      projectName: this.projectName,
+      componentName: this.componentName,
+      ...optionalParams,
+    });
   }
 
   info(message: string, ...optionalParams: any[]): void {
-    this.loggerInstance.info(message, ...optionalParams);
+    this.loggerInstance.info(message, {
+      projectName: this.projectName,
+      componentName: this.componentName,
+      ...optionalParams,
+    });
   }
 
   log(message: string, ...optionalParams: any[]): void {
-    this.loggerInstance.log(LOG_LEVELS.INFO, message, ...optionalParams);
+    this.loggerInstance.log(LOG_LEVELS.INFO, message, {
+      projectName: this.projectName,
+      componentName: this.componentName,
+      ...optionalParams,
+    });
   }
 
   warn(message: string, ...optionalParams: any[]): void {
-    this.loggerInstance.log(LOG_LEVELS.WARNING, message, ...optionalParams);
+    this.loggerInstance.log(LOG_LEVELS.WARNING, message, {
+      projectName: this.projectName,
+      componentName: this.componentName,
+      ...optionalParams,
+    });
   }
 
-  private getWinstonTransports(): any[] {
-    const transports: any[] = [];
+  private getWinstonTransports(): Transport[] {
+    const transports: Transport[] = [];
 
     if (config.developmentMode) {
       transports.push(

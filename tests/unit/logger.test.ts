@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import winston from 'winston';
-import Logger, { LOG_LEVELS } from '../../src/logger';
+import Logger from '../../src/logger';
 import ApplicationInsightsTransport from '../../src/applicationInsightsTransport';
+import { LOG_LEVELS } from '../../src/enums';
 
 jest.mock('../../src/applicationInsightsTransport');
 jest.mock('../../src/config', () => ({
@@ -26,7 +28,7 @@ describe('Logger', () => {
   beforeAll(() => {
     mockCreateLogger = jest.spyOn(winston, 'createLogger');
     mockCreateLogger.mockImplementation(() => mockLogger);
-    loggerInstance = new Logger();
+    loggerInstance = new Logger('DVSA', 'azure-logger');
   });
 
   afterEach(() => {
@@ -56,7 +58,11 @@ describe('Logger', () => {
     loggerInstance.critical(message);
 
     // assert
-    expect(mockLogger.log).toHaveBeenCalledWith(LOG_LEVELS.CRITICAL, message);
+    expect(mockLogger.log).toHaveBeenCalledWith(
+      LOG_LEVELS.CRITICAL,
+      message,
+      { componentName: 'azure-logger', projectName: 'DVSA' },
+    );
   });
 
   test('debug logs', () => {
@@ -67,7 +73,11 @@ describe('Logger', () => {
     loggerInstance.debug(message);
 
     // assert
-    expect(mockLogger.log).toHaveBeenCalledWith(LOG_LEVELS.DEBUG, message);
+    expect(mockLogger.log).toHaveBeenCalledWith(
+      LOG_LEVELS.DEBUG,
+      message,
+      { componentName: 'azure-logger', projectName: 'DVSA' },
+    );
   });
 
   test('audit logs', () => {
@@ -78,7 +88,11 @@ describe('Logger', () => {
     loggerInstance.audit(message);
 
     // assert
-    expect(mockLogger.log).toHaveBeenCalledWith(LOG_LEVELS.AUDIT, message);
+    expect(mockLogger.log).toHaveBeenCalledWith(
+      LOG_LEVELS.AUDIT,
+      message,
+      { componentName: 'azure-logger', projectName: 'DVSA' },
+    );
   });
 
   test('security logs', () => {
@@ -89,7 +103,11 @@ describe('Logger', () => {
     loggerInstance.security(message);
 
     // assert
-    expect(mockLogger.log).toHaveBeenCalledWith(LOG_LEVELS.SECURITY, message);
+    expect(mockLogger.log).toHaveBeenCalledWith(
+      LOG_LEVELS.SECURITY,
+      message,
+      { componentName: 'azure-logger', projectName: 'DVSA' },
+    );
   });
 
   test('error logs', () => {
@@ -100,7 +118,10 @@ describe('Logger', () => {
     loggerInstance.error(message);
 
     // assert
-    expect(mockLogger.error).toHaveBeenCalledWith(message);
+    expect(mockLogger.error).toHaveBeenCalledWith(
+      message,
+      { componentName: 'azure-logger', projectName: 'DVSA' },
+    );
   });
 
   test('info logs', () => {
@@ -111,7 +132,10 @@ describe('Logger', () => {
     loggerInstance.info(message);
 
     // assert
-    expect(mockLogger.info).toHaveBeenCalledWith(message);
+    expect(mockLogger.info).toHaveBeenCalledWith(
+      message,
+      { componentName: 'azure-logger', projectName: 'DVSA' },
+    );
   });
 
   test('log logs', () => {
@@ -122,7 +146,11 @@ describe('Logger', () => {
     loggerInstance.log(message);
 
     // assert
-    expect(mockLogger.log).toHaveBeenCalledWith(LOG_LEVELS.INFO, message);
+    expect(mockLogger.log).toHaveBeenCalledWith(
+      LOG_LEVELS.INFO,
+      message,
+      { componentName: 'azure-logger', projectName: 'DVSA' },
+    );
   });
 
   test('warn logs', () => {
@@ -133,6 +161,10 @@ describe('Logger', () => {
     loggerInstance.warn(message);
 
     // assert
-    expect(mockLogger.log).toHaveBeenCalledWith(LOG_LEVELS.WARNING, message);
+    expect(mockLogger.log).toHaveBeenCalledWith(
+      LOG_LEVELS.WARNING,
+      message,
+      { componentName: 'azure-logger', projectName: 'DVSA' },
+    );
   });
 });
