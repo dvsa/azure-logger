@@ -6,6 +6,7 @@ export { Logger, ILogger };
 
 // TODO - REMOVE For testing
 const logger = new Logger('FTTS', 'logging system');
+logger.event('EVENT_LOG', 'Test Message', { test: '123456', test2: false });
 logger.audit('Test Audit Log');
 logger.critical('Test Critical Log');
 logger.debug('Test Debug Log');

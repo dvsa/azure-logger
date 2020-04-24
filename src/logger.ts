@@ -19,6 +19,7 @@ class Logger implements ILogger {
       [LOG_LEVELS.DEBUG]: 4,
       [LOG_LEVELS.SECURITY]: 5,
       [LOG_LEVELS.AUDIT]: 6,
+      [LOG_LEVELS.EVENT]: 7,
     };
 
     this.loggerInstance = winston.createLogger({
@@ -93,6 +94,15 @@ class Logger implements ILogger {
       projectName: this.projectName,
       componentName: this.componentName,
       ...optionalParams,
+    });
+  }
+
+  event(name: string, message?: string, properties?: {[key: string]: any}): void {
+    this.loggerInstance.log(LOG_LEVELS.EVENT, message || '', {
+      name,
+      projectName: this.projectName,
+      componentName: this.componentName,
+      ...properties,
     });
   }
 

@@ -167,4 +167,29 @@ describe('Logger', () => {
       { componentName: 'azure-logger', projectName: 'DVSA' },
     );
   });
+
+  test('event logs call the logger with the correct data when no optional data is provided', () => {
+    // Act
+    loggerInstance.event('mock-name');
+
+    // Assert
+    expect(mockLogger.log).toHaveBeenCalledWith(LOG_LEVELS.EVENT, '', {
+      componentName: 'azure-logger',
+      projectName: 'DVSA',
+      name: 'mock-name',
+    });
+  });
+
+  test('event logs call the logger with the correct data when all optional data is provided', () => {
+    // Act
+    loggerInstance.event('mock-name', 'mock-message', { mockData: 'mock-data' });
+
+    // Assert
+    expect(mockLogger.log).toHaveBeenCalledWith(LOG_LEVELS.EVENT, 'mock-message', {
+      componentName: 'azure-logger',
+      projectName: 'DVSA',
+      mockData: 'mock-data',
+      name: 'mock-name',
+    });
+  });
 });

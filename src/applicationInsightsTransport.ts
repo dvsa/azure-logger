@@ -1,9 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { setup, defaultClient, TelemetryClient } from 'applicationinsights';
-import { SeverityLevel } from 'applicationinsights/out/Declarations/Contracts';
+import { SeverityLevel, EventTelemetry } from 'applicationinsights/out/Declarations/Contracts';
 import Transport from 'winston-transport';
 
-import { ApplicationInsightsTransportOptions, LogInfo } from './interfaces';
+import {
+  ApplicationInsightsTransportOptions,
+  LogInfo,
+  EventInfo,
+  TraceInfo,
+  ExceptionInfo,
+} from './interfaces';
 import { LOG_LEVELS, APP_INSIGHTS_LOG_LEVELS } from './enums';
 
 class ApplicationInsightsTransport extends Transport {
@@ -32,24 +38,23 @@ class ApplicationInsightsTransport extends Transport {
     }
   }
 
-  // TODO - switch the Log Info Type and create seperate ones for each type
   log(info: LogInfo, callback: Function): void {
     switch (this.logLevelsMap[info.level]) {
       case APP_INSIGHTS_LOG_LEVELS.EVENT:
-        this.createEvent(info);
+        this.createEvent(info as EventInfo);
         break;
       case APP_INSIGHTS_LOG_LEVELS.EXCEPTION:
-        this.createException(info);
+        this.createException(info as ExceptionInfo);
         break;
       case APP_INSIGHTS_LOG_LEVELS.TRACE:
       default:
-        this.createTrace(info);
+        this.createTrace(info as TraceInfo);
         break;
     }
     callback();
   }
 
-  private createTrace(info: LogInfo): void {
+  private createTrace(info: TraceInfo): void {
     this.client.trackTrace({
       severity: SeverityLevel.Information,
       message: info.message,
@@ -60,7 +65,7 @@ class ApplicationInsightsTransport extends Transport {
     });
   }
 
-  private createException(info: LogInfo): void {
+  private createException(info: ExceptionInfo): void {
     this.client.trackException({
       severity: SeverityLevel.Error,
       exception: new Error(info.message),
@@ -71,15 +76,27 @@ class ApplicationInsightsTransport extends Transport {
     });
   }
 
-  private createEvent(info: LogInfo): void {
-    this.client.trackEvent({
-      name: info.name || '',
+  private createEvent(info: EventInfo): void {
+    const {
+      name,
+      message,
+      meta,
+      level,
+      ...otherProperties
+    } = info;
+
+    const event: EventTelemetry = {
+      name,
       properties: {
-        projectName: info.projectName,
-        componentName: info.componentName,
-        message: info.message,
+        ...otherProperties,
       },
-    });
+    };
+
+    if (event.properties && message.trim().length > 0) {
+      event.properties.message = message;
+    }
+
+    this.client.trackEvent(event);
   }
 }
 

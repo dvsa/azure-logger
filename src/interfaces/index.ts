@@ -9,10 +9,28 @@ export interface ApplicationInsightsTransportOptions extends Transport.Transport
   appInsights?: any;
 }
 
-export interface LogInfo {
+export type LogInfo = ExceptionInfo | EventInfo | TraceInfo;
+
+export interface ExceptionInfo {
   level: LOG_LEVELS;
   message: string;
   projectName: string;
   componentName: string;
-  name?: string;
+}
+
+export interface EventInfo {
+  name: string;
+  level: LOG_LEVELS;
+  projectName: string;
+  componentName: string;
+  message: string;
+  meta: any[];
+  [key: string]: any;
+}
+
+export interface TraceInfo {
+  level: LOG_LEVELS;
+  message: string;
+  projectName: string;
+  componentName: string;
 }

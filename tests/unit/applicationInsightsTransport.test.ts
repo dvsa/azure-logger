@@ -7,7 +7,7 @@ import {
   ExceptionTelemetry,
 } from 'applicationinsights/out/Declarations/Contracts';
 import ApplicationInsightsTransport from '../../src/applicationInsightsTransport';
-import { LogInfo } from '../../src/interfaces';
+import { ExceptionInfo, EventInfo, TraceInfo } from '../../src/interfaces';
 import { LOG_LEVELS } from '../../src/enums';
 
 jest.mock('applicationinsights', () => ({
@@ -65,14 +65,6 @@ describe('ApplicationInsightsTransport', () => {
         componentName,
       },
     };
-    const expectedEventInput: EventTelemetry = {
-      name: eventName,
-      properties: {
-        projectName,
-        componentName,
-        message,
-      },
-    };
     const expectedErrorInput: ExceptionTelemetry = {
       exception: new Error(message),
       severity: SeverityLevel.Error,
@@ -90,7 +82,7 @@ describe('ApplicationInsightsTransport', () => {
 
     test('should create a trace log when provided with a audit log', () => {
       // Arrange
-      const mockLogInfo: LogInfo = {
+      const mockLogInfo: TraceInfo = {
         projectName,
         componentName,
         message,
@@ -104,7 +96,7 @@ describe('ApplicationInsightsTransport', () => {
 
     test('should create a trace log when provided with a critical log', () => {
       // Arrange
-      const mockLogInfo: LogInfo = {
+      const mockLogInfo: TraceInfo = {
         projectName,
         componentName,
         message,
@@ -118,7 +110,7 @@ describe('ApplicationInsightsTransport', () => {
 
     test('should create a trace log when provided with a debug log', () => {
       // Arrange
-      const mockLogInfo: LogInfo = {
+      const mockLogInfo: TraceInfo = {
         projectName,
         componentName,
         message,
@@ -132,7 +124,7 @@ describe('ApplicationInsightsTransport', () => {
 
     test('should create a exception log when provided with a error log', () => {
       // Arrange
-      const mockLogInfo: LogInfo = {
+      const mockLogInfo: ExceptionInfo = {
         projectName,
         componentName,
         message,
@@ -144,14 +136,48 @@ describe('ApplicationInsightsTransport', () => {
       expect(applicationinsightsTransport.client.trackException).toHaveBeenLastCalledWith(expectedErrorInput);
     });
 
-    test('should create a event log when provided with a event log', () => {
+    test('should create a event log with a message when provided with a event log with a message', () => {
       // Arrange
-      const mockLogInfo: LogInfo = {
+      const mockLogInfo: EventInfo = {
         projectName,
         componentName,
         message,
         level: LOG_LEVELS.EVENT,
         name: eventName,
+        meta: [],
+        randomData: 'random-data',
+      };
+      const expectedEventInput: EventTelemetry = {
+        name: eventName,
+        properties: {
+          projectName,
+          componentName,
+          message,
+          randomData: 'random-data',
+        },
+      };
+      // Act
+      applicationinsightsTransport.log(mockLogInfo, () => {});
+      // Assert
+      expect(applicationinsightsTransport.client.trackEvent).toHaveBeenLastCalledWith(expectedEventInput);
+    });
+
+    test('should create a event log without a message when provided with a event log with no message', () => {
+      // Arrange
+      const mockLogInfo: EventInfo = {
+        projectName,
+        componentName,
+        message: '',
+        level: LOG_LEVELS.EVENT,
+        name: eventName,
+        meta: [],
+      };
+      const expectedEventInput: EventTelemetry = {
+        name: eventName,
+        properties: {
+          projectName,
+          componentName,
+        },
       };
       // Act
       applicationinsightsTransport.log(mockLogInfo, () => {});
@@ -161,7 +187,7 @@ describe('ApplicationInsightsTransport', () => {
 
     test('should create a trace log when provided with a info log', () => {
       // Arrange
-      const mockLogInfo: LogInfo = {
+      const mockLogInfo: TraceInfo = {
         projectName,
         componentName,
         message,
@@ -175,7 +201,7 @@ describe('ApplicationInsightsTransport', () => {
 
     test('should create a trace log when provided with a security log', () => {
       // Arrange
-      const mockLogInfo: LogInfo = {
+      const mockLogInfo: TraceInfo = {
         projectName,
         componentName,
         message,
@@ -189,7 +215,7 @@ describe('ApplicationInsightsTransport', () => {
 
     test('should create a trace log when provided with a warning log', () => {
       // Arrange
-      const mockLogInfo: LogInfo = {
+      const mockLogInfo: TraceInfo = {
         projectName,
         componentName,
         message,

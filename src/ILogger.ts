@@ -8,4 +8,5 @@ export default interface ILogger {
   log(message: string, ...optionalParams: any[]): void;
   audit(message: string, ...optionalParams: any[]): void;
   security(message: string, ...optionalParams: any[]): void;
+  event(name: string, message? : string, properties?: {[key: string]: any}): void;
 }
