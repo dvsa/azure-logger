@@ -17,7 +17,7 @@ export default {
     level: process.env.LOG_LEVEL,
   },
   applicationInsights: {
-    key: process.env.APPINSIGHTS_INSTRUMENTATIONKEY,
+    key: process.env.APPINSIGHTS_INSTRUMENTATIONKEY || '',
   },
 
   /**

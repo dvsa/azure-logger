@@ -1,12 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { TelemetryClient } from 'applicationinsights';
 import Transport from 'winston-transport';
 import { LOG_LEVELS } from '../enums';
 
 export interface ApplicationInsightsTransportOptions extends Transport.TransportStreamOptions {
-  key?: string;
-  client?: TelemetryClient;
-  appInsights?: any;
+  key: string;
 }
 
 export type LogInfo = ExceptionInfo | EventInfo | TraceInfo;

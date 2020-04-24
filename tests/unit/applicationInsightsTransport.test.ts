@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { setup, TelemetryClient } from 'applicationinsights';
+import { setup, Configuration } from 'applicationinsights';
 import {
   TraceTelemetry,
   SeverityLevel,
@@ -11,40 +11,34 @@ import { ExceptionInfo, EventInfo, TraceInfo } from '../../src/interfaces';
 import { LOG_LEVELS } from '../../src/enums';
 
 jest.mock('applicationinsights', () => ({
-  setup: jest.fn().mockReturnValue({ start: () => {} }),
+  setup: jest.fn().mockReturnValue({
+    start: () => { },
+    setAutoDependencyCorrelation: jest.fn().mockReturnThis(),
+    setAutoCollectRequests: jest.fn().mockReturnThis(),
+    setAutoCollectPerformance: jest.fn().mockReturnThis(),
+    setAutoCollectExceptions: jest.fn().mockReturnThis(),
+    setAutoCollectDependencies: jest.fn().mockReturnThis(),
+    setAutoCollectConsole: jest.fn().mockReturnThis(),
+    setUseDiskRetryCaching: jest.fn().mockReturnThis(),
+    setSendLiveMetrics: jest.fn().mockReturnThis(),
+    setDistributedTracingMode: jest.fn().mockReturnThis(),
+  }),
   defaultClient: {
     context: 'Created by Mock',
     trackTrace: jest.fn(),
     trackException: jest.fn(),
     trackEvent: jest.fn(),
   },
+  DistributedTracingModes: {
+    AI_AND_W3C: 1,
+  },
 }));
 
 describe('ApplicationInsightsTransport', () => {
   describe('constructor', () => {
-    test('should use the client if one has been provided', () => {
-      // Arrange + Act
-      const result = new ApplicationInsightsTransport({ client: {} as TelemetryClient });
-
-      // Assert
-      expect(result.client).toEqual({});
-      expect(setup).not.toHaveBeenCalled();
-    });
-
-    test('should get the client from the appInsights object if one has been provided', () => {
-      // Arrange + Act
-      const result = new ApplicationInsightsTransport({
-        appInsights: { defaultClient: { context: 'appInsights' } },
-      });
-
-      // Assert
-      expect(result.client).toEqual({ context: 'appInsights' });
-      expect(setup).not.toHaveBeenCalled();
-    });
-
     test('should create a new app insights client if one is not provided', () => {
       // Arrange + Act
-      const result = new ApplicationInsightsTransport({});
+      const result = new ApplicationInsightsTransport({ key: 'dummy-key' });
 
       // Assert
       expect(result.client.context).toEqual('Created by Mock');
@@ -85,7 +79,7 @@ describe('ApplicationInsightsTransport', () => {
         },
       };
       // Act
-      applicationinsightsTransport.log(mockLogInfo, () => {});
+      applicationinsightsTransport.log(mockLogInfo, () => { });
       // Assert
       expect(applicationinsightsTransport.client.trackTrace).toHaveBeenLastCalledWith(expectedTraceInput);
     });
@@ -111,7 +105,7 @@ describe('ApplicationInsightsTransport', () => {
         },
       };
       // Act
-      applicationinsightsTransport.log(mockLogInfo, () => {});
+      applicationinsightsTransport.log(mockLogInfo, () => { });
       // Assert
       expect(applicationinsightsTransport.client.trackTrace).toHaveBeenLastCalledWith(expectedTraceInput);
     });
@@ -137,7 +131,7 @@ describe('ApplicationInsightsTransport', () => {
         },
       };
       // Act
-      applicationinsightsTransport.log(mockLogInfo, () => {});
+      applicationinsightsTransport.log(mockLogInfo, () => { });
       // Assert
       expect(applicationinsightsTransport.client.trackTrace).toHaveBeenLastCalledWith(expectedTraceInput);
     });
@@ -165,7 +159,7 @@ describe('ApplicationInsightsTransport', () => {
         },
       };
       // Act
-      applicationinsightsTransport.log(mockLogInfo, () => {});
+      applicationinsightsTransport.log(mockLogInfo, () => { });
       // Assert
       expect(applicationinsightsTransport.client.trackException).toHaveBeenLastCalledWith(expectedErrorInput);
     });
@@ -192,7 +186,7 @@ describe('ApplicationInsightsTransport', () => {
         },
       };
       // Act
-      applicationinsightsTransport.log(mockLogInfo, () => {});
+      applicationinsightsTransport.log(mockLogInfo, () => { });
       // Assert
       expect(applicationinsightsTransport.client.trackException).toHaveBeenLastCalledWith(expectedErrorInput);
     });
@@ -218,7 +212,7 @@ describe('ApplicationInsightsTransport', () => {
         },
       };
       // Act
-      applicationinsightsTransport.log(mockLogInfo, () => {});
+      applicationinsightsTransport.log(mockLogInfo, () => { });
       // Assert
       expect(applicationinsightsTransport.client.trackEvent).toHaveBeenLastCalledWith(expectedEventInput);
     });
@@ -241,7 +235,7 @@ describe('ApplicationInsightsTransport', () => {
         },
       };
       // Act
-      applicationinsightsTransport.log(mockLogInfo, () => {});
+      applicationinsightsTransport.log(mockLogInfo, () => { });
       // Assert
       expect(applicationinsightsTransport.client.trackEvent).toHaveBeenLastCalledWith(expectedEventInput);
     });
@@ -267,7 +261,7 @@ describe('ApplicationInsightsTransport', () => {
         },
       };
       // Act
-      applicationinsightsTransport.log(mockLogInfo, () => {});
+      applicationinsightsTransport.log(mockLogInfo, () => { });
       // Assert
       expect(applicationinsightsTransport.client.trackTrace).toHaveBeenLastCalledWith(expectedTraceInput);
     });
@@ -293,7 +287,7 @@ describe('ApplicationInsightsTransport', () => {
         },
       };
       // Act
-      applicationinsightsTransport.log(mockLogInfo, () => {});
+      applicationinsightsTransport.log(mockLogInfo, () => { });
       // Assert
       expect(applicationinsightsTransport.client.trackTrace).toHaveBeenLastCalledWith(expectedTraceInput);
     });
@@ -319,7 +313,7 @@ describe('ApplicationInsightsTransport', () => {
         },
       };
       // Act
-      applicationinsightsTransport.log(mockLogInfo, () => {});
+      applicationinsightsTransport.log(mockLogInfo, () => { });
       // Assert
       expect(applicationinsightsTransport.client.trackTrace).toHaveBeenLastCalledWith(expectedTraceInput);
     });

@@ -1,5 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { setup, defaultClient, TelemetryClient } from 'applicationinsights';
+import {
+  setup,
+  defaultClient,
+  TelemetryClient,
+  DistributedTracingModes,
+} from 'applicationinsights';
 import { SeverityLevel, EventTelemetry, ExceptionTelemetry } from 'applicationinsights/out/Declarations/Contracts';
 import Transport from 'winston-transport';
 
@@ -28,14 +33,18 @@ class ApplicationInsightsTransport extends Transport {
 
   constructor(options: ApplicationInsightsTransportOptions) {
     super(options);
-    if (options.client) {
-      this.client = options.client;
-    } else if (options.appInsights) {
-      this.client = options.appInsights.defaultClient;
-    } else {
-      setup(options.key).start();
-      this.client = defaultClient;
-    }
+    setup(options.key)
+      .setAutoDependencyCorrelation(true)
+      .setAutoCollectRequests(true)
+      .setAutoCollectPerformance(true, true)
+      .setAutoCollectExceptions(true)
+      .setAutoCollectDependencies(true)
+      .setAutoCollectConsole(true, true)
+      .setUseDiskRetryCaching(true)
+      .setSendLiveMetrics(false)
+      .setDistributedTracingMode(DistributedTracingModes.AI_AND_W3C)
+      .start();
+    this.client = defaultClient;
   }
 
   log(info: LogInfo, callback: Function): void {
