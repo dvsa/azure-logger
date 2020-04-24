@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { setup, Configuration } from 'applicationinsights';
+import { setup } from 'applicationinsights';
 import {
   TraceTelemetry,
   SeverityLevel,
@@ -36,13 +36,15 @@ jest.mock('applicationinsights', () => ({
 
 describe('ApplicationInsightsTransport', () => {
   describe('constructor', () => {
-    test('should create a new app insights client if one is not provided', () => {
-      // Arrange + Act
-      const result = new ApplicationInsightsTransport({ key: 'dummy-key' });
+    test('should create a new app insights client', () => {
+      // Arrange
+      const key = 'dummy-key';
+      // Act
+      const result = new ApplicationInsightsTransport({ key });
 
       // Assert
+      expect(setup).toHaveBeenCalledWith(key);
       expect(result.client.context).toEqual('Created by Mock');
-      expect(setup).toHaveBeenCalled();
     });
   });
 
