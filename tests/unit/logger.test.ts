@@ -113,14 +113,14 @@ describe('Logger', () => {
   test('error logs', () => {
     // arrange
     const message = 'Error log';
-
+    const error: Error = new Error('Test Error');
     // act
-    loggerInstance.error(message);
+    loggerInstance.error(error, message);
 
     // assert
     expect(mockLogger.error).toHaveBeenCalledWith(
       message,
-      { componentName: 'azure-logger', projectName: 'DVSA' },
+      { componentName: 'azure-logger', projectName: 'DVSA', error },
     );
   });
 

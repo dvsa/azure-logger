@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import winston, { Logger as WinstonLogger } from 'winston';
 import Transport from 'winston-transport';
 import config from './config';
@@ -33,71 +32,72 @@ class Logger implements ILogger {
     });
   }
 
-  critical(message: string, ...optionalParams: any[]): void {
+  critical(message: string, properties?: {[key: string]: string}): void {
     this.loggerInstance.log(LOG_LEVELS.CRITICAL, message, {
       projectName: this.projectName,
       componentName: this.componentName,
-      ...optionalParams,
+      ...properties,
     });
   }
 
-  debug(message: string, ...optionalParams: any[]): void {
+  debug(message: string, properties?: {[key: string]: string}): void {
     this.loggerInstance.log(LOG_LEVELS.DEBUG, message, {
       projectName: this.projectName,
       componentName: this.componentName,
-      ...optionalParams,
+      ...properties,
     });
   }
 
-  audit(message: string, ...optionalParams: any[]): void {
+  audit(message: string, properties?: {[key: string]: string}): void {
     this.loggerInstance.log(LOG_LEVELS.AUDIT, message, {
       projectName: this.projectName,
       componentName: this.componentName,
-      ...optionalParams,
+      ...properties,
     });
   }
 
-  security(message: string, ...optionalParams: any[]): void {
+  security(message: string, properties?: {[key: string]: string}): void {
     this.loggerInstance.log(LOG_LEVELS.SECURITY, message, {
       projectName: this.projectName,
       componentName: this.componentName,
-      ...optionalParams,
+      ...properties,
     });
   }
 
-  error(message: string, ...optionalParams: any[]): void {
-    this.loggerInstance.error(message, {
+  error(error: Error, message?: string, properties?: {[key: string]: string}): void {
+    this.loggerInstance.error(message || '', {
+      error,
       projectName: this.projectName,
       componentName: this.componentName,
-      ...optionalParams,
+      ...properties,
     });
   }
 
-  info(message: string, ...optionalParams: any[]): void {
+  info(message: string, properties?: {[key: string]: string}): void {
     this.loggerInstance.info(message, {
       projectName: this.projectName,
       componentName: this.componentName,
-      ...optionalParams,
+      ...properties,
     });
   }
 
-  log(message: string, ...optionalParams: any[]): void {
+  log(message: string, properties?: {[key: string]: string}): void {
     this.loggerInstance.log(LOG_LEVELS.INFO, message, {
       projectName: this.projectName,
       componentName: this.componentName,
-      ...optionalParams,
+      ...properties,
     });
   }
 
-  warn(message: string, ...optionalParams: any[]): void {
+  warn(message: string, properties?: {[key: string]: string}): void {
     this.loggerInstance.log(LOG_LEVELS.WARNING, message, {
       projectName: this.projectName,
       componentName: this.componentName,
-      ...optionalParams,
+      ...properties,
     });
   }
 
-  event(name: string, message?: string, properties?: {[key: string]: any}): void {
+  event(name: string, message?: string, properties?: {[key: string]: string}): void {
     this.loggerInstance.log(LOG_LEVELS.EVENT, message || '', {
       name,
       projectName: this.projectName,

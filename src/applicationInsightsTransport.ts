@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { setup, defaultClient, TelemetryClient } from 'applicationinsights';
-import { SeverityLevel, EventTelemetry } from 'applicationinsights/out/Declarations/Contracts';
+import { SeverityLevel, EventTelemetry, ExceptionTelemetry } from 'applicationinsights/out/Declarations/Contracts';
 import Transport from 'winston-transport';
 
 import {
@@ -55,25 +55,38 @@ class ApplicationInsightsTransport extends Transport {
   }
 
   private createTrace(info: TraceInfo): void {
+    const { message, meta, ...otherProperties } = info;
     this.client.trackTrace({
       severity: SeverityLevel.Information,
       message: info.message,
       properties: {
-        projectName: info.projectName,
-        componentName: info.componentName,
+        ...otherProperties,
       },
     });
   }
 
   private createException(info: ExceptionInfo): void {
-    this.client.trackException({
+    const {
+      error,
+      message,
+      level,
+      meta,
+      ...otherProperties
+    } = info;
+
+    const exception: ExceptionTelemetry = {
       severity: SeverityLevel.Error,
-      exception: new Error(info.message),
+      exception: error,
       properties: {
-        projectName: info.projectName,
-        componentName: info.componentName,
+        ...otherProperties,
       },
-    });
+    };
+
+    if (exception.properties && message.trim().length > 0) {
+      exception.properties.message = message;
+    }
+
+    this.client.trackException(exception);
   }
 
   private createEvent(info: EventInfo): void {

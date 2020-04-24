@@ -12,10 +12,13 @@ export interface ApplicationInsightsTransportOptions extends Transport.Transport
 export type LogInfo = ExceptionInfo | EventInfo | TraceInfo;
 
 export interface ExceptionInfo {
+  error: Error;
   level: LOG_LEVELS;
   message: string;
   projectName: string;
   componentName: string;
+  meta: any;
+  [key: string]: any;
 }
 
 export interface EventInfo {
@@ -24,7 +27,7 @@ export interface EventInfo {
   projectName: string;
   componentName: string;
   message: string;
-  meta: any[];
+  meta: any;
   [key: string]: any;
 }
 
@@ -33,4 +36,6 @@ export interface TraceInfo {
   message: string;
   projectName: string;
   componentName: string;
+  meta: any;
+  [key: string]: any;
 }

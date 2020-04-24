@@ -51,28 +51,12 @@ describe('ApplicationInsightsTransport', () => {
       expect(setup).toHaveBeenCalled();
     });
   });
+
   describe('log', () => {
     const projectName = 'DVSA';
     const componentName = 'azure-logger';
     const message = 'mock-message';
     const eventName = 'mock-event-name';
-
-    const expectedTraceInput: TraceTelemetry = {
-      severity: SeverityLevel.Information,
-      message,
-      properties: {
-        projectName,
-        componentName,
-      },
-    };
-    const expectedErrorInput: ExceptionTelemetry = {
-      exception: new Error(message),
-      severity: SeverityLevel.Error,
-      properties: {
-        projectName,
-        componentName,
-      },
-    };
 
     let applicationinsightsTransport: ApplicationInsightsTransport;
 
@@ -87,6 +71,18 @@ describe('ApplicationInsightsTransport', () => {
         componentName,
         message,
         level: LOG_LEVELS.AUDIT,
+        meta: {},
+        optionalProp: 'optional',
+      };
+      const expectedTraceInput: TraceTelemetry = {
+        severity: SeverityLevel.Information,
+        message,
+        properties: {
+          projectName,
+          componentName,
+          level: LOG_LEVELS.AUDIT,
+          optionalProp: 'optional',
+        },
       };
       // Act
       applicationinsightsTransport.log(mockLogInfo, () => {});
@@ -101,6 +97,18 @@ describe('ApplicationInsightsTransport', () => {
         componentName,
         message,
         level: LOG_LEVELS.CRITICAL,
+        meta: [],
+        optionalProp: 'optional',
+      };
+      const expectedTraceInput: TraceTelemetry = {
+        severity: SeverityLevel.Information,
+        message,
+        properties: {
+          projectName,
+          componentName,
+          level: LOG_LEVELS.CRITICAL,
+          optionalProp: 'optional',
+        },
       };
       // Act
       applicationinsightsTransport.log(mockLogInfo, () => {});
@@ -115,6 +123,18 @@ describe('ApplicationInsightsTransport', () => {
         componentName,
         message,
         level: LOG_LEVELS.DEBUG,
+        meta: {},
+        optionalProp: 'optional',
+      };
+      const expectedTraceInput: TraceTelemetry = {
+        severity: SeverityLevel.Information,
+        message,
+        properties: {
+          projectName,
+          componentName,
+          level: LOG_LEVELS.DEBUG,
+          optionalProp: 'optional',
+        },
       };
       // Act
       applicationinsightsTransport.log(mockLogInfo, () => {});
@@ -122,13 +142,54 @@ describe('ApplicationInsightsTransport', () => {
       expect(applicationinsightsTransport.client.trackTrace).toHaveBeenLastCalledWith(expectedTraceInput);
     });
 
-    test('should create a exception log when provided with a error log', () => {
+    test('should create a exception log with a message when provided with a error log with a message', () => {
       // Arrange
+      const error: Error = new Error('Test Error');
       const mockLogInfo: ExceptionInfo = {
+        error,
+        message,
         projectName,
         componentName,
-        message,
         level: LOG_LEVELS.ERROR,
+        meta: {},
+        optionalProp: 'optional',
+      };
+      const expectedErrorInput: ExceptionTelemetry = {
+        exception: error,
+        severity: SeverityLevel.Error,
+        properties: {
+          projectName,
+          componentName,
+          message,
+          optionalProp: 'optional',
+        },
+      };
+      // Act
+      applicationinsightsTransport.log(mockLogInfo, () => {});
+      // Assert
+      expect(applicationinsightsTransport.client.trackException).toHaveBeenLastCalledWith(expectedErrorInput);
+    });
+
+    test('should create a exception log with no message when provided with a error log with no messgae', () => {
+      // Arrange
+      const error: Error = new Error('Test Error');
+      const mockLogInfo: ExceptionInfo = {
+        error,
+        message: '',
+        projectName,
+        componentName,
+        level: LOG_LEVELS.ERROR,
+        meta: {},
+        optionalProp: 'optional',
+      };
+      const expectedErrorInput: ExceptionTelemetry = {
+        exception: error,
+        severity: SeverityLevel.Error,
+        properties: {
+          projectName,
+          componentName,
+          optionalProp: 'optional',
+        },
       };
       // Act
       applicationinsightsTransport.log(mockLogInfo, () => {});
@@ -170,7 +231,7 @@ describe('ApplicationInsightsTransport', () => {
         message: '',
         level: LOG_LEVELS.EVENT,
         name: eventName,
-        meta: [],
+        meta: {},
       };
       const expectedEventInput: EventTelemetry = {
         name: eventName,
@@ -192,6 +253,18 @@ describe('ApplicationInsightsTransport', () => {
         componentName,
         message,
         level: LOG_LEVELS.INFO,
+        meta: {},
+        optionalProp: 'optional',
+      };
+      const expectedTraceInput: TraceTelemetry = {
+        severity: SeverityLevel.Information,
+        message,
+        properties: {
+          projectName,
+          componentName,
+          level: LOG_LEVELS.INFO,
+          optionalProp: 'optional',
+        },
       };
       // Act
       applicationinsightsTransport.log(mockLogInfo, () => {});
@@ -206,6 +279,18 @@ describe('ApplicationInsightsTransport', () => {
         componentName,
         message,
         level: LOG_LEVELS.SECURITY,
+        meta: {},
+        optionalProp: 'optional',
+      };
+      const expectedTraceInput: TraceTelemetry = {
+        severity: SeverityLevel.Information,
+        message,
+        properties: {
+          projectName,
+          componentName,
+          level: LOG_LEVELS.SECURITY,
+          optionalProp: 'optional',
+        },
       };
       // Act
       applicationinsightsTransport.log(mockLogInfo, () => {});
@@ -220,6 +305,18 @@ describe('ApplicationInsightsTransport', () => {
         componentName,
         message,
         level: LOG_LEVELS.WARNING,
+        meta: {},
+        optionalProp: 'optional',
+      };
+      const expectedTraceInput: TraceTelemetry = {
+        severity: SeverityLevel.Information,
+        message,
+        properties: {
+          projectName,
+          componentName,
+          level: LOG_LEVELS.WARNING,
+          optionalProp: 'optional',
+        },
       };
       // Act
       applicationinsightsTransport.log(mockLogInfo, () => {});

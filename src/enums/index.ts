@@ -1,5 +1,5 @@
 export enum LOG_LEVELS {
-  CRITICAL = 'crit',
+  CRITICAL = 'critical',
   ERROR = 'error',
   WARNING = 'warning',
   INFO = 'info',
