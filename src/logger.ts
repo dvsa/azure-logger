@@ -115,17 +115,12 @@ class Logger implements ILogger {
           format: winston.format.simple(),
           level: config.logs.level,
         }),
-        new ApplicationInsightsTransport({
-          key: config.applicationInsights.key,
-          level: config.logs.level,
-        }),
       );
     } else {
+      if (!config.applicationInsights.key) {
+        throw new Error('No Application Insights Key provided in APPINSIGHTS_INSTRUMENTATIONKEY');
+      }
       transports.push(
-        new winston.transports.Console({
-          format: winston.format.simple(),
-          level: config.logs.level,
-        }),
         new ApplicationInsightsTransport({
           key: config.applicationInsights.key,
           level: config.logs.level,

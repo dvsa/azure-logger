@@ -71,7 +71,7 @@ describe('ApplicationInsightsTransport', () => {
         optionalProp: 'optional',
       };
       const expectedTraceInput: TraceTelemetry = {
-        severity: SeverityLevel.Information,
+        severity: SeverityLevel.Verbose,
         message,
         properties: {
           projectName,
@@ -97,7 +97,7 @@ describe('ApplicationInsightsTransport', () => {
         optionalProp: 'optional',
       };
       const expectedTraceInput: TraceTelemetry = {
-        severity: SeverityLevel.Information,
+        severity: SeverityLevel.Critical,
         message,
         properties: {
           projectName,
@@ -123,7 +123,7 @@ describe('ApplicationInsightsTransport', () => {
         optionalProp: 'optional',
       };
       const expectedTraceInput: TraceTelemetry = {
-        severity: SeverityLevel.Information,
+        severity: SeverityLevel.Verbose,
         message,
         properties: {
           projectName,
@@ -305,7 +305,7 @@ describe('ApplicationInsightsTransport', () => {
         optionalProp: 'optional',
       };
       const expectedTraceInput: TraceTelemetry = {
-        severity: SeverityLevel.Information,
+        severity: SeverityLevel.Warning,
         message,
         properties: {
           projectName,

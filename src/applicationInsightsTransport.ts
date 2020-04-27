@@ -31,6 +31,17 @@ class ApplicationInsightsTransport extends Transport {
     [LOG_LEVELS.WARNING]: APP_INSIGHTS_LOG_LEVELS.TRACE,
   };
 
+  severityLevelMap = {
+    [LOG_LEVELS.AUDIT]: SeverityLevel.Verbose,
+    [LOG_LEVELS.CRITICAL]: SeverityLevel.Critical,
+    [LOG_LEVELS.DEBUG]: SeverityLevel.Verbose,
+    [LOG_LEVELS.ERROR]: SeverityLevel.Error,
+    [LOG_LEVELS.EVENT]: SeverityLevel.Information,
+    [LOG_LEVELS.INFO]: SeverityLevel.Information,
+    [LOG_LEVELS.SECURITY]: SeverityLevel.Information,
+    [LOG_LEVELS.WARNING]: SeverityLevel.Warning,
+  };
+
   constructor(options: ApplicationInsightsTransportOptions) {
     super(options);
     setup(options.key)
@@ -66,7 +77,7 @@ class ApplicationInsightsTransport extends Transport {
   private createTrace(info: TraceInfo): void {
     const { message, meta, ...otherProperties } = info;
     this.client.trackTrace({
-      severity: SeverityLevel.Information,
+      severity: this.severityLevelMap[info.level],
       message: info.message,
       properties: {
         ...otherProperties,
