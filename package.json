@@ -1,6 +1,6 @@
 {
   "name": "@dvsa/azure-logger",
-  "version": "0.0.6",
+  "version": "1.0.0",
   "description": "Shareable Logging Facade, implemented with Winston",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -28,8 +28,10 @@
     "typescript": "^3.7.5"
   },
   "dependencies": {
+    "applicationinsights": "^1.7.4",
     "dotenv": "^8.2.0",
-    "winston": "3.1.0"
+    "winston": "3.1.0",
+    "winston-transport": "^4.3.0"
   },
   "jest": {
     "moduleFileExtensions": [
@@ -37,9 +39,9 @@
       "tsx",
       "js"
     ],
+    "testRegex": "./tests/.*.test.ts$",
     "roots": [
-      "<rootDir>/src"
-    ],
-    "testRegex": "(/__tests__/.*|(\\.|/)(spec))\\.tsx?$"
+      "<rootDir>"
+    ]
   }
 }
