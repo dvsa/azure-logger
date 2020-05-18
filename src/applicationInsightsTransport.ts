@@ -55,6 +55,13 @@ class ApplicationInsightsTransport extends Transport {
       .setSendLiveMetrics(false)
       .setDistributedTracingMode(DistributedTracingModes.AI_AND_W3C)
       .start();
+    // The role we set determines what you see in the application map for
+    // the component using the logger
+    defaultClient.addTelemetryProcessor((envelope) => {
+      envelope.tags['ai.cloud.role'] = options.componentName;
+      return true;
+    });
+
     this.client = defaultClient;
   }
 

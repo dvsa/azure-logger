@@ -28,6 +28,7 @@ jest.mock('applicationinsights', () => ({
     trackTrace: jest.fn(),
     trackException: jest.fn(),
     trackEvent: jest.fn(),
+    addTelemetryProcessor: jest.fn(),
   },
   DistributedTracingModes: {
     AI_AND_W3C: 1,
@@ -39,8 +40,9 @@ describe('ApplicationInsightsTransport', () => {
     test('should create a new app insights client', () => {
       // Arrange
       const key = 'dummy-key';
+      const componentName = 'azure-logger';
       // Act
-      const result = new ApplicationInsightsTransport({ key });
+      const result = new ApplicationInsightsTransport({ key, componentName });
 
       // Assert
       expect(setup).toHaveBeenCalledWith(key);
@@ -49,6 +51,7 @@ describe('ApplicationInsightsTransport', () => {
   });
 
   describe('log', () => {
+    const key = 'dummy-key';
     const projectName = 'DVSA';
     const componentName = 'azure-logger';
     const message = 'mock-message';
@@ -57,7 +60,10 @@ describe('ApplicationInsightsTransport', () => {
     let applicationinsightsTransport: ApplicationInsightsTransport;
 
     beforeEach(() => {
-      applicationinsightsTransport = new ApplicationInsightsTransport({});
+      applicationinsightsTransport = new ApplicationInsightsTransport({
+        key,
+        componentName,
+      });
     });
 
     test('should create a trace log when provided with a audit log', () => {
