@@ -47,6 +47,7 @@ describe('Logger', () => {
     expect(ApplicationInsightsTransport).toHaveBeenCalledWith({
       level: 'DEBUG',
       key: '123-456-789',
+      componentName: 'azure-logger',
     });
   });
 

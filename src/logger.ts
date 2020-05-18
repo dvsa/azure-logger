@@ -123,6 +123,7 @@ class Logger implements ILogger {
       transports.push(
         new ApplicationInsightsTransport({
           key: config.applicationInsights.key,
+          componentName: this.componentName,
           level: config.logs.level,
         }),
       );

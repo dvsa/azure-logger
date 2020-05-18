@@ -4,6 +4,7 @@ import { LOG_LEVELS } from '../enums';
 
 export interface ApplicationInsightsTransportOptions extends Transport.TransportStreamOptions {
   key: string;
+  componentName: string;
 }
 
 export type LogInfo = ExceptionInfo | EventInfo | TraceInfo;
