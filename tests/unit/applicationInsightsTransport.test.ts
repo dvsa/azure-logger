@@ -24,16 +24,23 @@ jest.mock('applicationinsights', () => ({
     setDistributedTracingMode: jest.fn().mockReturnThis(),
   }),
   defaultClient: {
-    context: 'Created by Mock',
+    context: {
+      keys: {
+        cloudRole: 'cloudRole',
+      },
+      tags: {
+        cloudRole: '',
+      },
+    },
     trackTrace: jest.fn(),
     trackException: jest.fn(),
     trackEvent: jest.fn(),
-    addTelemetryProcessor: jest.fn(),
   },
   DistributedTracingModes: {
     AI_AND_W3C: 1,
   },
 }));
+
 
 describe('ApplicationInsightsTransport', () => {
   describe('constructor', () => {
@@ -46,7 +53,7 @@ describe('ApplicationInsightsTransport', () => {
 
       // Assert
       expect(setup).toHaveBeenCalledWith(key);
-      expect(result.client.context).toEqual('Created by Mock');
+      expect(result.client.context.tags.cloudRole).toEqual(componentName);
     });
   });
 
