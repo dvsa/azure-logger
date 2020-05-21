@@ -15,12 +15,14 @@
   "license": "MIT",
   "repository": "github:dvsa/azure-logger",
   "devDependencies": {
+    "@azure/functions": "^1.2.0",
     "@babel/core": "^7.8.4",
     "@babel/preset-env": "^7.8.4",
     "@babel/preset-typescript": "^7.8.3",
     "@dvsa/eslint-config-ts": "^1.0.0",
     "@types/jest": "^25.1.2",
     "@types/node": "^13.7.1",
+    "@types/uuid": "^8.0.0",
     "babel-jest": "^25.1.0",
     "eslint": "^6.8.0",
     "jest": "^25.1.0",
@@ -28,8 +30,9 @@
     "typescript": "^3.7.5"
   },
   "dependencies": {
-    "applicationinsights": "^1.7.4",
+    "applicationinsights": "^1.7.5",
     "dotenv": "^8.2.0",
+    "uuid": "^8.0.0",
     "winston": "3.1.0",
     "winston-transport": "^4.3.0"
   },

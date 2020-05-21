@@ -58,6 +58,8 @@ class ApplicationInsightsTransport extends Transport {
 
     this.client = defaultClient;
     this.client.context.tags[this.client.context.keys.cloudRole] = options.componentName;
+    this.client.context.tags[this.client.context.keys.operationId] = options.operationId;
+    this.client.context.tags[this.client.context.keys.operationParentId] = options.parentOperationId;
   }
 
   log(info: LogInfo, callback: Function): void {
