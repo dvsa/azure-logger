@@ -151,7 +151,7 @@ class Logger implements ILogger {
 
   private getLoggerInstance(): WinstonLogger {
     if (!this.loggerInstance) {
-      throw new Error('Logger is not configured, please run setupLogger() first');
+      throw new Error('Logger is not configured, please run Logger.setup() first');
     }
     return this.loggerInstance;
   }

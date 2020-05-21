@@ -36,7 +36,7 @@ describe('Logger', () => {
   };
   const logMessage = 'test log message';
   const logProps = { componentName: 'azure-logger', projectName: 'DVSA' };
-  const notSetupErrorMessage = 'Logger is not configured, please run setupLogger() first';
+  const notSetupErrorMessage = 'Logger is not configured, please run Logger.setup() first';
 
   beforeAll(() => {
     mockCreateLogger = jest.spyOn(winston, 'createLogger');
