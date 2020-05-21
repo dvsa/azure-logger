@@ -13,6 +13,9 @@ jest.mock('../../src/config', () => ({
     key: '123-456-789',
   },
 }));
+jest.mock('uuid', () => ({
+  v4: jest.fn().mockReturnValue('mock-uuid'),
+}));
 
 describe('Logger', () => {
   let loggerInstance: Logger;
@@ -24,10 +27,23 @@ describe('Logger', () => {
     log: jest.fn(),
     warn: jest.fn(),
   };
+  const mockContext: any = {
+    traceContext: {
+      traceparent: 'trace-parent',
+      tracestate: 'trace-state',
+      attributes: {},
+    },
+  };
+  const logMessage = 'test log message';
+  const logProps = { componentName: 'azure-logger', projectName: 'DVSA' };
+  const notSetupErrorMessage = 'Logger is not configured, please run Logger.setup() first';
 
   beforeAll(() => {
     mockCreateLogger = jest.spyOn(winston, 'createLogger');
     mockCreateLogger.mockImplementation(() => mockLogger);
+  });
+
+  beforeEach(() => {
     loggerInstance = new Logger('DVSA', 'azure-logger');
   });
 
@@ -39,158 +55,394 @@ describe('Logger', () => {
     jest.restoreAllMocks();
   });
 
-  test('configures application insights', () => {
-    // act
-    loggerInstance.log('Test Log');
-
-    // assert
-    expect(ApplicationInsightsTransport).toHaveBeenCalledWith({
-      level: 'DEBUG',
-      key: '123-456-789',
-      componentName: 'azure-logger',
+  describe('setup', () => {
+    test('should correctly configure application insights', () => {
+      // act
+      loggerInstance.setup(mockContext);
+      // assert
+      expect(ApplicationInsightsTransport).toHaveBeenCalledWith({
+        level: 'DEBUG',
+        key: '123-456-789',
+        componentName: 'azure-logger',
+        operationId: 'mock-uuid',
+        parentOperationId: 'parent',
+      });
     });
   });
 
-  test('critical logs', () => {
-    // arrange
-    const message = 'Critical log';
+  describe('critical', () => {
+    test('should create a critical log', () => {
+      // arrange
+      loggerInstance.setup(mockContext);
+      // act
+      loggerInstance.critical(logMessage);
+      // assert
+      expect(mockLogger.log).toHaveBeenCalledWith(
+        LOG_LEVELS.CRITICAL,
+        logMessage,
+        logProps,
+      );
+    });
 
-    // act
-    loggerInstance.critical(message);
+    test('should create a critical log with optional properties', () => {
+      // arrange
+      loggerInstance.setup(mockContext);
+      // act
+      loggerInstance.critical(logMessage, { isTest: 'true' });
+      // assert
+      expect(mockLogger.log).toHaveBeenCalledWith(
+        LOG_LEVELS.CRITICAL,
+        logMessage,
+        {...logProps, isTest: 'true'},
+      );
+    });
 
-    // assert
-    expect(mockLogger.log).toHaveBeenCalledWith(
-      LOG_LEVELS.CRITICAL,
-      message,
-      { componentName: 'azure-logger', projectName: 'DVSA' },
-    );
-  });
-
-  test('debug logs', () => {
-    // arrange
-    const message = 'Debug log';
-
-    // act
-    loggerInstance.debug(message);
-
-    // assert
-    expect(mockLogger.log).toHaveBeenCalledWith(
-      LOG_LEVELS.DEBUG,
-      message,
-      { componentName: 'azure-logger', projectName: 'DVSA' },
-    );
-  });
-
-  test('audit logs', () => {
-    // arrange
-    const message = 'Audit log';
-
-    // act
-    loggerInstance.audit(message);
-
-    // assert
-    expect(mockLogger.log).toHaveBeenCalledWith(
-      LOG_LEVELS.AUDIT,
-      message,
-      { componentName: 'azure-logger', projectName: 'DVSA' },
-    );
-  });
-
-  test('security logs', () => {
-    // arrange
-    const message = 'Audit log';
-
-    // act
-    loggerInstance.security(message);
-
-    // assert
-    expect(mockLogger.log).toHaveBeenCalledWith(
-      LOG_LEVELS.SECURITY,
-      message,
-      { componentName: 'azure-logger', projectName: 'DVSA' },
-    );
-  });
-
-  test('error logs', () => {
-    // arrange
-    const message = 'Error log';
-    const error: Error = new Error('Test Error');
-    // act
-    loggerInstance.error(error, message);
-
-    // assert
-    expect(mockLogger.error).toHaveBeenCalledWith(
-      message,
-      { componentName: 'azure-logger', projectName: 'DVSA', error },
-    );
-  });
-
-  test('info logs', () => {
-    // arrange
-    const message = 'Info log';
-
-    // act
-    loggerInstance.info(message);
-
-    // assert
-    expect(mockLogger.info).toHaveBeenCalledWith(
-      message,
-      { componentName: 'azure-logger', projectName: 'DVSA' },
-    );
-  });
-
-  test('log logs', () => {
-    // arrange
-    const message = 'Log log';
-
-    // act
-    loggerInstance.log(message);
-
-    // assert
-    expect(mockLogger.log).toHaveBeenCalledWith(
-      LOG_LEVELS.INFO,
-      message,
-      { componentName: 'azure-logger', projectName: 'DVSA' },
-    );
-  });
-
-  test('warn logs', () => {
-    // arrange
-    const message = 'Warn log';
-
-    // act
-    loggerInstance.warn(message);
-
-    // assert
-    expect(mockLogger.log).toHaveBeenCalledWith(
-      LOG_LEVELS.WARNING,
-      message,
-      { componentName: 'azure-logger', projectName: 'DVSA' },
-    );
-  });
-
-  test('event logs call the logger with the correct data when no optional data is provided', () => {
-    // Act
-    loggerInstance.event('mock-name');
-
-    // Assert
-    expect(mockLogger.log).toHaveBeenCalledWith(LOG_LEVELS.EVENT, '', {
-      componentName: 'azure-logger',
-      projectName: 'DVSA',
-      name: 'mock-name',
+    test('should throw an error if setup has not been run', () => {
+      try {
+        loggerInstance.critical(logMessage);
+      } catch (error) {
+        expect(error.message).toEqual(notSetupErrorMessage);
+      }
     });
   });
 
-  test('event logs call the logger with the correct data when all optional data is provided', () => {
-    // Act
-    loggerInstance.event('mock-name', 'mock-message', { mockData: 'mock-data' });
+  describe('debug', () => {
+    test('should create a debug log', () => {
+      // arrange
+      loggerInstance.setup(mockContext);
+      // act
+      loggerInstance.debug(logMessage);
+      // assert
+      expect(mockLogger.log).toHaveBeenCalledWith(
+        LOG_LEVELS.DEBUG,
+        logMessage,
+        logProps,
+      );
+    });
 
-    // Assert
-    expect(mockLogger.log).toHaveBeenCalledWith(LOG_LEVELS.EVENT, 'mock-message', {
-      componentName: 'azure-logger',
-      projectName: 'DVSA',
-      mockData: 'mock-data',
-      name: 'mock-name',
+    test('should create a debug log with optional properties', () => {
+      // arrange
+      loggerInstance.setup(mockContext);
+      // act
+      loggerInstance.debug(logMessage, { isTest: 'true' });
+      // assert
+      expect(mockLogger.log).toHaveBeenCalledWith(
+        LOG_LEVELS.DEBUG,
+        logMessage,
+        { ...logProps, isTest: 'true' },
+      );
+    });
+
+    test('should throw an error if setup has not been run', () => {
+      try {
+        loggerInstance.debug(logMessage);
+      } catch (error) {
+        expect(error.message).toEqual(notSetupErrorMessage);
+      }
+    });
+  });
+
+  describe('audit', () => {
+    test('should create a audit log', () => {
+      // arrange
+      loggerInstance.setup(mockContext);
+      // act
+      loggerInstance.audit(logMessage);
+      // assert
+      expect(mockLogger.log).toHaveBeenCalledWith(
+        LOG_LEVELS.AUDIT,
+        logMessage,
+        logProps,
+      );
+    });
+
+    test('should create a audit log with optional properties', () => {
+      // arrange
+      loggerInstance.setup(mockContext);
+      // act
+      loggerInstance.audit(logMessage, { isTest: 'true' });
+      // assert
+      expect(mockLogger.log).toHaveBeenCalledWith(
+        LOG_LEVELS.AUDIT,
+        logMessage,
+        { ...logProps, isTest: 'true' },
+      );
+    });
+
+    test('should throw an error if setup has not been run', () => {
+      try {
+        loggerInstance.audit(logMessage);
+      } catch (error) {
+        expect(error.message).toEqual(notSetupErrorMessage);
+      }
+    });
+  });
+
+  describe('security', () => {
+    test('should create a security log', () => {
+      // arrange
+      loggerInstance.setup(mockContext);
+      // act
+      loggerInstance.security(logMessage);
+      // assert
+      expect(mockLogger.log).toHaveBeenCalledWith(
+        LOG_LEVELS.SECURITY,
+        logMessage,
+        logProps,
+      );
+    });
+
+    test('should create a security log with optional properties', () => {
+      // arrange
+      loggerInstance.setup(mockContext);
+      // act
+      loggerInstance.security(logMessage, { isTest: 'true' });
+      // assert
+      expect(mockLogger.log).toHaveBeenCalledWith(
+        LOG_LEVELS.SECURITY,
+        logMessage,
+        { ...logProps, isTest: 'true' },
+      );
+    });
+
+
+    test('should throw an error if setup has not been run', () => {
+      try {
+        loggerInstance.security(logMessage);
+      } catch (error) {
+        expect(error.message).toEqual(notSetupErrorMessage);
+      }
+    });
+  });
+
+  describe('error', () => {
+    const mockError = new Error('Mock Error');
+
+    test('should create a error log', () => {
+      // arrange
+      loggerInstance.setup(mockContext);
+      // act
+      loggerInstance.error(mockError);
+      // assert
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        '',
+        { ...logProps, error: mockError },
+      );
+    });
+
+    test('should create a error log with an optional error message', () => {
+      // arrange
+      loggerInstance.setup(mockContext);
+      // act
+      loggerInstance.error(mockError, logMessage);
+      // assert
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        logMessage,
+        { ...logProps, error: mockError },
+      );
+    });
+
+    test('should create a error log with optional properties', () => {
+      // arrange
+      loggerInstance.setup(mockContext);
+      // act
+      loggerInstance.error(mockError, undefined, { isTest: 'true' });
+      // assert
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        '',
+        { ...logProps, error: mockError, isTest: 'true' },
+      );
+    });
+
+    test('should create a error log with an optional message and properties', () => {
+      // arrange
+      loggerInstance.setup(mockContext);
+      // act
+      loggerInstance.error(mockError, logMessage, { isTest: 'true' });
+      // assert
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        logMessage,
+        { ...logProps, error: mockError, isTest: 'true' },
+      );
+    });
+
+    test('should throw an error if setup has not been run', () => {
+      try {
+        loggerInstance.error(mockError, logMessage);
+      } catch (error) {
+        expect(error.message).toEqual(notSetupErrorMessage);
+      }
+    });
+  });
+
+  describe('info', () => {
+    test('should create a info log', () => {
+      // arrange
+      loggerInstance.setup(mockContext);
+      // act
+      loggerInstance.info(logMessage);
+      // assert
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        logMessage,
+        logProps,
+      );
+    });
+
+    test('should create a info log with optional properties', () => {
+      // arrange
+      loggerInstance.setup(mockContext);
+      // act
+      loggerInstance.info(logMessage, { isTest: 'true' });
+      // assert
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        logMessage,
+        { ...logProps, isTest: 'true' },
+      );
+    });
+
+    test('should throw an error if setup has not been run', () => {
+      try {
+        loggerInstance.info(logMessage);
+      } catch (error) {
+        expect(error.message).toEqual(notSetupErrorMessage);
+      }
+    });
+  });
+
+  describe('log', () => {
+    test('should create a log', () => {
+      // arrange
+      loggerInstance.setup(mockContext);
+      // act
+      loggerInstance.log(logMessage);
+      // assert
+      expect(mockLogger.log).toHaveBeenCalledWith(
+        LOG_LEVELS.INFO,
+        logMessage,
+        logProps,
+      );
+    });
+
+    test('should create a log with additional properties', () => {
+      // arrange
+      loggerInstance.setup(mockContext);
+      // act
+      loggerInstance.log(logMessage, { isTest: 'true' });
+      // assert
+      expect(mockLogger.log).toHaveBeenCalledWith(
+        LOG_LEVELS.INFO,
+        logMessage,
+        { ...logProps, isTest: 'true' },
+      );
+    });
+
+    test('should throw an error if setup has not been run', () => {
+      try {
+        loggerInstance.log(logMessage);
+      } catch (error) {
+        expect(error.message).toEqual(notSetupErrorMessage);
+      }
+    });
+  });
+
+  describe('warn', () => {
+    test('should create a warn log', () => {
+      // arrange
+      loggerInstance.setup(mockContext);
+      // act
+      loggerInstance.warn(logMessage);
+      // assert
+      expect(mockLogger.log).toHaveBeenCalledWith(
+        LOG_LEVELS.WARNING,
+        logMessage,
+        logProps,
+      );
+    });
+
+    test('should create a warn log with optional properties', () => {
+      // arrange
+      loggerInstance.setup(mockContext);
+      // act
+      loggerInstance.warn(logMessage, { isTest: 'true' });
+      // assert
+      expect(mockLogger.log).toHaveBeenCalledWith(
+        LOG_LEVELS.WARNING,
+        logMessage,
+        { ...logProps, isTest: 'true' },
+      );
+    });
+
+    test('should throw an error if setup has not been run', () => {
+      try {
+        loggerInstance.warn(logMessage);
+      } catch (error) {
+        expect(error.message).toEqual(notSetupErrorMessage);
+      }
+    });
+  });
+
+  describe('event', () => {
+    const mockEventName = 'mock-event';
+    const mockEventMessage = 'mock-event-message';
+
+    test('should create a event log', () => {
+      // arrange
+      loggerInstance.setup(mockContext);
+      // act
+      loggerInstance.event(mockEventName);
+      // assert
+      expect(mockLogger.log).toHaveBeenCalledWith(
+        LOG_LEVELS.EVENT,
+        '',
+        { ...logProps, name: mockEventName },
+      );
+    });
+
+    test('should create a event with an optional message', () => {
+      // arrange
+      loggerInstance.setup(mockContext);
+      // act
+      loggerInstance.event(mockEventName, mockEventMessage);
+      // assert
+      expect(mockLogger.log).toHaveBeenCalledWith(
+        LOG_LEVELS.EVENT,
+        mockEventMessage,
+        { ...logProps, name: mockEventName },
+      );
+    });
+
+    test('should create a event with optional properties', () => {
+      // arrange
+      loggerInstance.setup(mockContext);
+      // act
+      loggerInstance.event(mockEventName, undefined, { isTest: 'true' });
+      // assert
+      expect(mockLogger.log).toHaveBeenCalledWith(
+        LOG_LEVELS.EVENT,
+        '',
+        { ...logProps, name: mockEventName, isTest: 'true' },
+      );
+    });
+
+    test('should create a event with an optional message and properties', () => {
+      // arrange
+      loggerInstance.setup(mockContext);
+      // act
+      loggerInstance.event(mockEventName, mockEventMessage, { isTest: 'true' });
+      // assert
+      expect(mockLogger.log).toHaveBeenCalledWith(
+        LOG_LEVELS.EVENT,
+        mockEventMessage,
+        { ...logProps, name: mockEventName, isTest: 'true' },
+      );
+    });
+
+    test('should throw an error if setup has not been run', () => {
+      try {
+        loggerInstance.event(mockEventName);
+      } catch (error) {
+        expect(error.message).toEqual(notSetupErrorMessage);
+      }
     });
   });
 });

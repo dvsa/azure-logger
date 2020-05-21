@@ -1,15 +1,30 @@
 import winston, { Logger as WinstonLogger } from 'winston';
 import Transport from 'winston-transport';
+// eslint-disable-next-line import/no-unresolved
+import { Context } from '@azure/functions';
+import { v4 as uuidv4 } from 'uuid';
 import config from './config';
 import ILogger from './ILogger';
 import ApplicationInsightsTransport from './applicationInsightsTransport';
 import { LOG_LEVELS } from './enums';
 
 class Logger implements ILogger {
-  private loggerInstance: WinstonLogger;
+  private loggerInstance: WinstonLogger| undefined;
 
-  constructor(private projectName: string, private componentName: string) {
-    const transports = this.getWinstonTransports();
+  constructor(private projectName: string, private componentName: string) {}
+
+  setup(context: Context): void {
+    const operationId: string = uuidv4();
+    let parentOperationId: string;
+
+    if (context.traceContext && context.traceContext.traceparent) {
+      const { traceparent } = context.traceContext;
+      parentOperationId = traceparent ? traceparent.split('-')[1] : operationId;
+    } else {
+      parentOperationId = operationId;
+    }
+
+    const transports = this.getWinstonTransports(parentOperationId, operationId);
     const customLevels = {
       [LOG_LEVELS.CRITICAL]: 0,
       [LOG_LEVELS.ERROR]: 1,
@@ -33,7 +48,7 @@ class Logger implements ILogger {
   }
 
   critical(message: string, properties?: {[key: string]: string}): void {
-    this.loggerInstance.log(LOG_LEVELS.CRITICAL, message, {
+    this.getLoggerInstance().log(LOG_LEVELS.CRITICAL, message, {
       projectName: this.projectName,
       componentName: this.componentName,
       ...properties,
@@ -41,7 +56,7 @@ class Logger implements ILogger {
   }
 
   debug(message: string, properties?: {[key: string]: string}): void {
-    this.loggerInstance.log(LOG_LEVELS.DEBUG, message, {
+    this.getLoggerInstance().log(LOG_LEVELS.DEBUG, message, {
       projectName: this.projectName,
       componentName: this.componentName,
       ...properties,
@@ -49,7 +64,7 @@ class Logger implements ILogger {
   }
 
   audit(message: string, properties?: {[key: string]: string}): void {
-    this.loggerInstance.log(LOG_LEVELS.AUDIT, message, {
+    this.getLoggerInstance().log(LOG_LEVELS.AUDIT, message, {
       projectName: this.projectName,
       componentName: this.componentName,
       ...properties,
@@ -57,7 +72,7 @@ class Logger implements ILogger {
   }
 
   security(message: string, properties?: {[key: string]: string}): void {
-    this.loggerInstance.log(LOG_LEVELS.SECURITY, message, {
+    this.getLoggerInstance().log(LOG_LEVELS.SECURITY, message, {
       projectName: this.projectName,
       componentName: this.componentName,
       ...properties,
@@ -65,7 +80,7 @@ class Logger implements ILogger {
   }
 
   error(error: Error, message?: string, properties?: {[key: string]: string}): void {
-    this.loggerInstance.error(message || '', {
+    this.getLoggerInstance().error(message || '', {
       error,
       projectName: this.projectName,
       componentName: this.componentName,
@@ -74,7 +89,7 @@ class Logger implements ILogger {
   }
 
   info(message: string, properties?: {[key: string]: string}): void {
-    this.loggerInstance.info(message, {
+    this.getLoggerInstance().info(message, {
       projectName: this.projectName,
       componentName: this.componentName,
       ...properties,
@@ -82,7 +97,7 @@ class Logger implements ILogger {
   }
 
   log(message: string, properties?: {[key: string]: string}): void {
-    this.loggerInstance.log(LOG_LEVELS.INFO, message, {
+    this.getLoggerInstance().log(LOG_LEVELS.INFO, message, {
       projectName: this.projectName,
       componentName: this.componentName,
       ...properties,
@@ -90,7 +105,7 @@ class Logger implements ILogger {
   }
 
   warn(message: string, properties?: {[key: string]: string}): void {
-    this.loggerInstance.log(LOG_LEVELS.WARNING, message, {
+    this.getLoggerInstance().log(LOG_LEVELS.WARNING, message, {
       projectName: this.projectName,
       componentName: this.componentName,
       ...properties,
@@ -98,7 +113,7 @@ class Logger implements ILogger {
   }
 
   event(name: string, message?: string, properties?: {[key: string]: string}): void {
-    this.loggerInstance.log(LOG_LEVELS.EVENT, message || '', {
+    this.getLoggerInstance().log(LOG_LEVELS.EVENT, message || '', {
       name,
       projectName: this.projectName,
       componentName: this.componentName,
@@ -106,7 +121,7 @@ class Logger implements ILogger {
     });
   }
 
-  private getWinstonTransports(): Transport[] {
+  private getWinstonTransports(parentOperationId: string, operationId: string): Transport[] {
     const transports: Transport[] = [];
 
     if (config.developmentMode) {
@@ -125,11 +140,20 @@ class Logger implements ILogger {
           key: config.applicationInsights.key,
           componentName: this.componentName,
           level: config.logs.level,
+          operationId,
+          parentOperationId,
         }),
       );
     }
 
     return transports;
+  }
+
+  private getLoggerInstance(): WinstonLogger {
+    if (!this.loggerInstance) {
+      throw new Error('Logger is not configured, please run Logger.setup() first');
+    }
+    return this.loggerInstance;
   }
 }
 
