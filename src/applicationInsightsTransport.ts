@@ -53,7 +53,7 @@ class ApplicationInsightsTransport extends Transport {
       .setAutoCollectConsole(true, true)
       .setUseDiskRetryCaching(true)
       .setSendLiveMetrics(false)
-      .setDistributedTracingMode(DistributedTracingModes.AI_AND_W3C)
+      .setDistributedTracingMode(DistributedTracingModes.AI)
       .start();
 
     this.client = defaultClient;
