@@ -13,9 +13,6 @@ jest.mock('../../src/config', () => ({
     key: '123-456-789',
   },
 }));
-jest.mock('uuid', () => ({
-  v4: jest.fn().mockReturnValue('mock-uuid'),
-}));
 
 describe('Logger', () => {
   let loggerInstance: Logger;
@@ -64,8 +61,7 @@ describe('Logger', () => {
         level: 'DEBUG',
         key: '123-456-789',
         componentName: 'azure-logger',
-        operationId: 'mock-uuid',
-        parentOperationId: 'parent',
+        operationId: 'parent',
       });
     });
   });

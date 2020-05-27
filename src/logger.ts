@@ -2,7 +2,6 @@ import winston, { Logger as WinstonLogger } from 'winston';
 import Transport from 'winston-transport';
 // eslint-disable-next-line import/no-unresolved
 import { Context } from '@azure/functions';
-import { v4 as uuidv4 } from 'uuid';
 import config from './config';
 import ILogger from './ILogger';
 import ApplicationInsightsTransport from './applicationInsightsTransport';
@@ -14,17 +13,14 @@ class Logger implements ILogger {
   constructor(private projectName: string, private componentName: string) {}
 
   setup(context: Context): void {
-    const operationId: string = uuidv4();
-    let parentOperationId: string;
+    let operationId = '';
 
     if (context.traceContext && context.traceContext.traceparent) {
       const { traceparent } = context.traceContext;
-      parentOperationId = traceparent ? traceparent.split('-')[1] : operationId;
-    } else {
-      parentOperationId = operationId;
+      operationId = traceparent ? traceparent.split('-')[1] : '';
     }
 
-    const transports = this.getWinstonTransports(parentOperationId, operationId);
+    const transports = this.getWinstonTransports(operationId);
     const customLevels = {
       [LOG_LEVELS.CRITICAL]: 0,
       [LOG_LEVELS.ERROR]: 1,
@@ -121,7 +117,7 @@ class Logger implements ILogger {
     });
   }
 
-  private getWinstonTransports(parentOperationId: string, operationId: string): Transport[] {
+  private getWinstonTransports(operationId: string): Transport[] {
     const transports: Transport[] = [];
 
     if (config.developmentMode) {
@@ -141,7 +137,6 @@ class Logger implements ILogger {
           componentName: this.componentName,
           level: config.logs.level,
           operationId,
-          parentOperationId,
         }),
       );
     }

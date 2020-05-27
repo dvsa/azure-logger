@@ -52,17 +52,15 @@ describe('ApplicationInsightsTransport', () => {
       // Arrange
       const key = 'dummy-key';
       const componentName = 'azure-logger';
-      const parentOperationId = 'parent-operation-id';
       const operationId = 'operation-id';
       // Act
       const result = new ApplicationInsightsTransport({
-        key, componentName, parentOperationId, operationId,
+        key, componentName, operationId,
       });
 
       // Assert
       expect(setup).toHaveBeenCalledWith(key);
       expect(result.client.context.tags.cloudRole).toEqual(componentName);
-      expect(result.client.context.tags.operationParentId).toEqual(parentOperationId);
       expect(result.client.context.tags.operationId).toEqual(operationId);
     });
   });
@@ -73,7 +71,6 @@ describe('ApplicationInsightsTransport', () => {
     const componentName = 'azure-logger';
     const message = 'mock-message';
     const eventName = 'mock-event-name';
-    const parentOperationId = 'parent-operation-id';
     const operationId = 'operation-id';
 
     let applicationinsightsTransport: ApplicationInsightsTransport;
@@ -82,7 +79,6 @@ describe('ApplicationInsightsTransport', () => {
       applicationinsightsTransport = new ApplicationInsightsTransport({
         key,
         componentName,
-        parentOperationId,
         operationId,
       });
     });
