@@ -64,7 +64,6 @@ class ApplicationInsightsTransport extends Transport {
       is closer to v1.0.0
     */
     this.client.context.tags[this.client.context.keys.operationId] = options.operationId;
-    this.client.context.tags[this.client.context.keys.operationParentId] = options.parentOperationId;
   }
 
   log(info: LogInfo, callback: Function): void {

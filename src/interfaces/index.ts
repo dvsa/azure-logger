@@ -5,7 +5,6 @@ import { LOG_LEVELS } from '../enums';
 export interface ApplicationInsightsTransportOptions extends Transport.TransportStreamOptions {
   key: string;
   componentName: string;
-  parentOperationId: string;
   operationId: string;
 }
 
