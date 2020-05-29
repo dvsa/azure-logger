@@ -45,7 +45,7 @@ class ApplicationInsightsTransport extends Transport {
   constructor(options: ApplicationInsightsTransportOptions) {
     super(options);
     setup(options.key)
-      .setAutoDependencyCorrelation(true, true)
+      .setAutoDependencyCorrelation(true)
       .setAutoCollectRequests(true)
       .setAutoCollectPerformance(true, true)
       .setAutoCollectExceptions(true)
@@ -53,7 +53,7 @@ class ApplicationInsightsTransport extends Transport {
       .setAutoCollectConsole(true, true)
       .setUseDiskRetryCaching(true)
       .setSendLiveMetrics(false)
-      .setDistributedTracingMode(DistributedTracingModes.AI)
+      .setDistributedTracingMode(DistributedTracingModes.AI_AND_W3C)
       .start();
 
     this.client = defaultClient;
