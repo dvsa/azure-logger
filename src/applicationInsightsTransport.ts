@@ -20,6 +20,8 @@ import { LOG_LEVELS, APP_INSIGHTS_LOG_LEVELS } from './enums';
 class ApplicationInsightsTransport extends Transport {
   client: TelemetryClient;
 
+  operationIdOverride: { [key: string]: string };
+
   logLevelsMap = {
     [LOG_LEVELS.AUDIT]: APP_INSIGHTS_LOG_LEVELS.TRACE,
     [LOG_LEVELS.CRITICAL]: APP_INSIGHTS_LOG_LEVELS.TRACE,
@@ -43,7 +45,7 @@ class ApplicationInsightsTransport extends Transport {
   };
 
   constructor(options: ApplicationInsightsTransportOptions) {
-    super(options);
+    super();
     setup(options.key)
       .setAutoDependencyCorrelation(true)
       .setAutoCollectRequests(true)
@@ -63,7 +65,8 @@ class ApplicationInsightsTransport extends Transport {
       Once issue has been fixed the logger and it's implmentation can be simplified so it
       is closer to v1.0.0
     */
-    this.client.context.tags[this.client.context.keys.operationId] = options.operationId;
+    // this.client.context.tags[this.client.context.keys.operationId] = options.operationId;
+    this.operationIdOverride = { 'ai.operation.id': options.operationId };
   }
 
   log(info: LogInfo, callback: Function): void {
@@ -87,6 +90,7 @@ class ApplicationInsightsTransport extends Transport {
     this.client.trackTrace({
       severity: this.severityLevelMap[info.level],
       message: info.message,
+      tagOverrides: this.operationIdOverride,
       properties: {
         ...otherProperties,
       },
@@ -105,6 +109,7 @@ class ApplicationInsightsTransport extends Transport {
     const exception: ExceptionTelemetry = {
       severity: SeverityLevel.Error,
       exception: error,
+      tagOverrides: this.operationIdOverride,
       properties: {
         ...otherProperties,
       },
@@ -128,6 +133,7 @@ class ApplicationInsightsTransport extends Transport {
 
     const event: EventTelemetry = {
       name,
+      tagOverrides: this.operationIdOverride,
       properties: {
         ...otherProperties,
       },
