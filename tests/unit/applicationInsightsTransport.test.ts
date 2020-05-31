@@ -61,7 +61,6 @@ describe('ApplicationInsightsTransport', () => {
       // Assert
       expect(setup).toHaveBeenCalledWith(key);
       expect(result.client.context.tags.cloudRole).toEqual(componentName);
-      expect(result.client.context.tags.operationId).toEqual(operationId);
     });
   });
 
@@ -96,6 +95,9 @@ describe('ApplicationInsightsTransport', () => {
       const expectedTraceInput: TraceTelemetry = {
         severity: SeverityLevel.Verbose,
         message,
+        tagOverrides: {
+          'ai.operation.id': operationId,
+        },
         properties: {
           projectName,
           componentName,
@@ -122,6 +124,9 @@ describe('ApplicationInsightsTransport', () => {
       const expectedTraceInput: TraceTelemetry = {
         severity: SeverityLevel.Critical,
         message,
+        tagOverrides: {
+          'ai.operation.id': operationId,
+        },
         properties: {
           projectName,
           componentName,
@@ -148,6 +153,9 @@ describe('ApplicationInsightsTransport', () => {
       const expectedTraceInput: TraceTelemetry = {
         severity: SeverityLevel.Verbose,
         message,
+        tagOverrides: {
+          'ai.operation.id': operationId,
+        },
         properties: {
           projectName,
           componentName,
@@ -176,6 +184,9 @@ describe('ApplicationInsightsTransport', () => {
       const expectedErrorInput: ExceptionTelemetry = {
         exception: error,
         severity: SeverityLevel.Error,
+        tagOverrides: {
+          'ai.operation.id': operationId,
+        },
         properties: {
           projectName,
           componentName,
@@ -204,6 +215,9 @@ describe('ApplicationInsightsTransport', () => {
       const expectedErrorInput: ExceptionTelemetry = {
         exception: error,
         severity: SeverityLevel.Error,
+        tagOverrides: {
+          'ai.operation.id': operationId,
+        },
         properties: {
           projectName,
           componentName,
@@ -229,6 +243,9 @@ describe('ApplicationInsightsTransport', () => {
       };
       const expectedEventInput: EventTelemetry = {
         name: eventName,
+        tagOverrides: {
+          'ai.operation.id': operationId,
+        },
         properties: {
           projectName,
           componentName,
@@ -254,6 +271,9 @@ describe('ApplicationInsightsTransport', () => {
       };
       const expectedEventInput: EventTelemetry = {
         name: eventName,
+        tagOverrides: {
+          'ai.operation.id': operationId,
+        },
         properties: {
           projectName,
           componentName,
@@ -278,6 +298,9 @@ describe('ApplicationInsightsTransport', () => {
       const expectedTraceInput: TraceTelemetry = {
         severity: SeverityLevel.Information,
         message,
+        tagOverrides: {
+          'ai.operation.id': operationId,
+        },
         properties: {
           projectName,
           componentName,
@@ -304,6 +327,9 @@ describe('ApplicationInsightsTransport', () => {
       const expectedTraceInput: TraceTelemetry = {
         severity: SeverityLevel.Information,
         message,
+        tagOverrides: {
+          'ai.operation.id': operationId,
+        },
         properties: {
           projectName,
           componentName,
@@ -330,6 +356,9 @@ describe('ApplicationInsightsTransport', () => {
       const expectedTraceInput: TraceTelemetry = {
         severity: SeverityLevel.Warning,
         message,
+        tagOverrides: {
+          'ai.operation.id': operationId,
+        },
         properties: {
           projectName,
           componentName,
