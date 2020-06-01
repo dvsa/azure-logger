@@ -67,9 +67,11 @@ class ApplicationInsightsTransport extends Transport {
     */
     // this.client.context.tags[this.client.context.keys.operationId] = options.operationId;
     this.operationIdOverride = { 'ai.operation.id': options.operationId };
+    console.log(`LOGGER SETUP :: Setup Config - ${JSON.stringify(this.client.config)}`);
   }
 
   log(info: LogInfo, callback: Function): void {
+    console.log(`${info.componentName} :: Log Client Config - ${JSON.stringify(this.client.config)}`);
     switch (this.logLevelsMap[info.level]) {
       case APP_INSIGHTS_LOG_LEVELS.EVENT:
         this.createEvent(info as EventInfo);
