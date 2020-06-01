@@ -4,6 +4,7 @@ import {
   defaultClient,
   TelemetryClient,
   DistributedTracingModes,
+  getCorrelationContext,
 } from 'applicationinsights';
 import { SeverityLevel, EventTelemetry, ExceptionTelemetry } from 'applicationinsights/out/Declarations/Contracts';
 import Transport from 'winston-transport';
@@ -67,11 +68,39 @@ class ApplicationInsightsTransport extends Transport {
     */
     // this.client.context.tags[this.client.context.keys.operationId] = options.operationId;
     this.operationIdOverride = { 'ai.operation.id': options.operationId };
-    console.log(`LOGGER SETUP :: Setup Config - ${JSON.stringify(this.client.config)}`);
+    this.createTrace({
+      message: `LOGGER SETUP :: Setup Config - ${JSON.stringify(this.client.config)}`,
+      level: LOG_LEVELS.CRITICAL,
+      componentName: '',
+      projectName: '',
+      meta: {},
+    });
+
+    this.createTrace({
+      message: `LOGGER SETUP :: Correlation Context ${JSON.stringify(getCorrelationContext())}`,
+      level: LOG_LEVELS.CRITICAL,
+      componentName: '',
+      projectName: '',
+      meta: {},
+    });
+
   }
 
   log(info: LogInfo, callback: Function): void {
-    console.log(`${info.componentName} :: Log Client Config - ${JSON.stringify(this.client.config)}`);
+    this.createTrace({
+      message: `${info.componentName} :: Log Client Config - ${JSON.stringify(this.client.config)}`,
+      level: info.level,
+      componentName: info.componentName,
+      projectName: info.projectName,
+      meta: info.meta,
+    });
+    this.createTrace({
+      message: `${info.componentName} :: Log Correlation Context - ${JSON.stringify(getCorrelationContext())}`,
+      level: info.level,
+      componentName: info.componentName,
+      projectName: info.projectName,
+      meta: info.meta,
+    });
     switch (this.logLevelsMap[info.level]) {
       case APP_INSIGHTS_LOG_LEVELS.EVENT:
         this.createEvent(info as EventInfo);
