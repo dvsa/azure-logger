@@ -66,7 +66,10 @@ class ApplicationInsightsTransport extends Transport {
       Once issue has been fixed the logger and it's implmentation can be simplified so it
       is closer to v1.0.0
     */
-    // this.client.context.tags[this.client.context.keys.operationId] = options.operationId;
+    this.client.context.tags[this.client.context.keys.operationId] = options.operationId;
+    this.client.context.tags[this.client.context.keys.operationName] = options.componentName;
+
+
     this.operationIdOverride = { 'ai.operation.id': options.operationId };
     this.createTrace({
       message: `LOGGER SETUP :: Setup Config - ${JSON.stringify(this.client.config)}`,
