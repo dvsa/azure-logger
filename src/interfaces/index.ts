@@ -5,7 +5,6 @@ import { LOG_LEVELS } from '../enums';
 export interface ApplicationInsightsTransportOptions extends Transport.TransportStreamOptions {
   key: string;
   componentName: string;
-  operationId: string;
 }
 
 export type LogInfo = ExceptionInfo | EventInfo | TraceInfo;
@@ -16,6 +15,7 @@ export interface ExceptionInfo {
   message: string;
   projectName: string;
   componentName: string;
+  operationId: string;
   meta: any;
   [key: string]: any;
 }
@@ -26,6 +26,7 @@ export interface EventInfo {
   projectName: string;
   componentName: string;
   message: string;
+  operationId: string;
   meta: any;
   [key: string]: any;
 }
@@ -35,6 +36,7 @@ export interface TraceInfo {
   message: string;
   projectName: string;
   componentName: string;
+  operationId: string;
   meta: any;
   [key: string]: any;
 }

@@ -27,13 +27,11 @@ jest.mock('applicationinsights', () => ({
     context: {
       keys: {
         cloudRole: 'cloudRole',
-        operationId: 'operationId',
-        operationParentId: 'operationParentId',
+        operationId: 'ai.operation.id',
       },
       tags: {
         cloudRole: '',
         operationId: '',
-        operationParentId: '',
       },
     },
     trackTrace: jest.fn(),
@@ -52,10 +50,9 @@ describe('ApplicationInsightsTransport', () => {
       // Arrange
       const key = 'dummy-key';
       const componentName = 'azure-logger';
-      const operationId = 'operation-id';
       // Act
       const result = new ApplicationInsightsTransport({
-        key, componentName, operationId,
+        key, componentName,
       });
 
       // Assert
@@ -78,7 +75,6 @@ describe('ApplicationInsightsTransport', () => {
       applicationinsightsTransport = new ApplicationInsightsTransport({
         key,
         componentName,
-        operationId,
       });
     });
 
@@ -88,6 +84,7 @@ describe('ApplicationInsightsTransport', () => {
         projectName,
         componentName,
         message,
+        operationId,
         level: LOG_LEVELS.AUDIT,
         meta: {},
         optionalProp: 'optional',
@@ -117,6 +114,7 @@ describe('ApplicationInsightsTransport', () => {
         projectName,
         componentName,
         message,
+        operationId,
         level: LOG_LEVELS.CRITICAL,
         meta: [],
         optionalProp: 'optional',
@@ -146,6 +144,7 @@ describe('ApplicationInsightsTransport', () => {
         projectName,
         componentName,
         message,
+        operationId,
         level: LOG_LEVELS.DEBUG,
         meta: {},
         optionalProp: 'optional',
@@ -177,6 +176,7 @@ describe('ApplicationInsightsTransport', () => {
         message,
         projectName,
         componentName,
+        operationId,
         level: LOG_LEVELS.ERROR,
         meta: {},
         optionalProp: 'optional',
@@ -208,6 +208,7 @@ describe('ApplicationInsightsTransport', () => {
         message: '',
         projectName,
         componentName,
+        operationId,
         level: LOG_LEVELS.ERROR,
         meta: {},
         optionalProp: 'optional',
@@ -236,6 +237,7 @@ describe('ApplicationInsightsTransport', () => {
         projectName,
         componentName,
         message,
+        operationId,
         level: LOG_LEVELS.EVENT,
         name: eventName,
         meta: [],
@@ -265,6 +267,7 @@ describe('ApplicationInsightsTransport', () => {
         projectName,
         componentName,
         message: '',
+        operationId,
         level: LOG_LEVELS.EVENT,
         name: eventName,
         meta: {},
@@ -291,6 +294,7 @@ describe('ApplicationInsightsTransport', () => {
         projectName,
         componentName,
         message,
+        operationId,
         level: LOG_LEVELS.INFO,
         meta: {},
         optionalProp: 'optional',
@@ -320,6 +324,7 @@ describe('ApplicationInsightsTransport', () => {
         projectName,
         componentName,
         message,
+        operationId,
         level: LOG_LEVELS.SECURITY,
         meta: {},
         optionalProp: 'optional',
@@ -349,6 +354,7 @@ describe('ApplicationInsightsTransport', () => {
         projectName,
         componentName,
         message,
+        operationId,
         level: LOG_LEVELS.WARNING,
         meta: {},
         optionalProp: 'optional',
