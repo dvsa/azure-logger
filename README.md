@@ -36,14 +36,16 @@ APPINSIGHTS_INSTRUMENTATIONKEY={APP_INSIGHTS_KEY}
 
 1) Create a class Logger called logger.ts. In this class we will create an instance of the Azure Logger, work out the operation id, and provide a wrapper for all the logger functions so we don't need to worry about the operation id elsewhere in the code.
 ```typescript
+// eslint-disable-next-line import/no-unresolved
 import { Context } from '@azure/functions';
 import { Logger as AzureLogger, getOperationId } from '@dvsa/azure-logger';
 
 
 class Logger {
   private azureLogger: AzureLogger;
-  private operationId: string | undefined;
+  private operationId: string = '';
   private noOperationIdErrorMessage = 'configureOperationId must be run before using the logger';
+  hasOperationIdBeenSet: boolean = false;
 
   constructor() {
     this.azureLogger = new AzureLogger('ftts', 'ftts-location-api');
@@ -51,74 +53,62 @@ class Logger {
 
   configureOperationId(context: Context): void {
     this.operationId = getOperationId(context);
+    this.hasOperationIdBeenSet =  true;
   }
 
-  critical(message: string, properties?: {[key: string]: string}): void {
-    if (!this.operationId) {
-      throw new Error(this.noOperationIdErrorMessage);
-    }
+  critical(message: string, properties?: { [key: string]: string }): void {
+    this.throwIfOperationIdNotSet();
     this.azureLogger.critical(message, this.operationId, properties);
   }
 
-  error(error: Error, message?: string, properties?: {[key: string]: string}): void {
-    if (!this.operationId) {
-      throw new Error(this.noOperationIdErrorMessage);
-    }
+  error(error: Error, message?: string, properties?: { [key: string]: string }): void {
+    this.throwIfOperationIdNotSet();
     this.azureLogger.error(error, this.operationId, message, properties);
   }
 
-  warn(message: string, properties?: {[key: string]: string}): void {
-    if (!this.operationId) {
-      throw new Error(this.noOperationIdErrorMessage);
-    }
+  warn(message: string, properties?: { [key: string]: string }): void {
+    this.throwIfOperationIdNotSet();
     this.azureLogger.warn(message, this.operationId, properties);
   }
 
-  info(message: string, properties?: {[key: string]: string}): void {
-    if (!this.operationId) {
-      throw new Error(this.noOperationIdErrorMessage);
-    }
+  info(message: string, properties?: { [key: string]: string }): void {
+    this.throwIfOperationIdNotSet();
     this.azureLogger.info(message, this.operationId, properties);
   }
 
-  debug(message: string, properties?: {[key: string]: string}): void {
-    if (!this.operationId) {
-      throw new Error(this.noOperationIdErrorMessage);
-    }
+  debug(message: string, properties?: { [key: string]: string }): void {
+    this.throwIfOperationIdNotSet();
     this.azureLogger.debug(message, this.operationId, properties);
   }
 
-  log(message: string, properties?: {[key: string]: string}): void {
-    if (!this.operationId) {
-      throw new Error(this.noOperationIdErrorMessage);
-    }
+  log(message: string, properties?: { [key: string]: string }): void {
+    this.throwIfOperationIdNotSet();
     this.azureLogger.log(message, this.operationId, properties);
   }
 
-  audit(message: string, properties?: {[key: string]: string}): void {
-    if (!this.operationId) {
-      throw new Error(this.noOperationIdErrorMessage);
-    }
+  audit(message: string, properties?: { [key: string]: string }): void {
+    this.throwIfOperationIdNotSet();
     this.azureLogger.audit(message, this.operationId, properties);
   }
 
-  security(message: string, properties?: {[key: string]: string}): void {
-    if (!this.operationId) {
-      throw new Error(this.noOperationIdErrorMessage);
-    }
+  security(message: string, properties?: { [key: string]: string }): void {
+    this.throwIfOperationIdNotSet();
     this.azureLogger.security(message, this.operationId, properties);
   }
 
-  event(name: string, message? : string, properties?: {[key: string]: string}): void {
-    if (!this.operationId) {
+  event(name: string, message?: string, properties?: { [key: string]: string }): void {
+    this.throwIfOperationIdNotSet();
+    this.azureLogger.event(name, this.operationId, message, properties);
+  }
+
+  private throwIfOperationIdNotSet() {
+    if (!this.hasOperationIdBeenSet) {
       throw new Error(this.noOperationIdErrorMessage);
     }
-    this.azureLogger.event(name, this.operationId, message, properties);
   }
 }
 
 export default new Logger();
-
 ```
 
 2.  At the start of the azure function call configureOperationId and pass the function context in
