@@ -36,7 +36,6 @@ APPINSIGHTS_INSTRUMENTATIONKEY={APP_INSIGHTS_KEY}
 
 1) Create a class Logger called logger.ts. In this class we will create an instance of the Azure Logger, work out the operation id, and provide a wrapper for all the logger functions so we don't need to worry about the operation id elsewhere in the code.
 ```typescript
-// eslint-disable-next-line import/no-unresolved
 import { Context } from '@azure/functions';
 import { Logger as AzureLogger, getOperationId } from '@dvsa/azure-logger';
 
@@ -45,7 +44,7 @@ class Logger {
   private azureLogger: AzureLogger;
   private operationId: string = '';
   private noOperationIdErrorMessage = 'configureOperationId must be run before using the logger';
-  hasOperationIdBeenSet: boolean = false;
+  private hasOperationIdBeenSet: boolean = false;
 
   constructor() {
     this.azureLogger = new AzureLogger('ftts', 'ftts-location-api');
@@ -53,7 +52,7 @@ class Logger {
 
   configureOperationId(context: Context): void {
     this.operationId = getOperationId(context);
-    this.hasOperationIdBeenSet =  true;
+    this.hasOperationIdBeenSet = true;
   }
 
   critical(message: string, properties?: { [key: string]: string }): void {
