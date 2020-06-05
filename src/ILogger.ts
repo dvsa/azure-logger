@@ -1,11 +1,14 @@
+// eslint-disable-next-line import/no-unresolved
+import { Context } from '@azure/functions';
+
 export default interface ILogger {
-  critical(message: string, operationId: string, properties?: {[key: string]: string}): void;
-  error(error: Error, operationId: string, message?: string, properties?: {[key: string]: string}): void;
-  warn(message: string, operationId: string, properties?: {[key: string]: string}): void;
-  info(message: string, operationId: string, properties?: {[key: string]: string}): void;
-  debug(message: string, operationId: string, properties?: {[key: string]: string}): void;
-  log(message: string, operationId: string, properties?: {[key: string]: string}): void;
-  audit(message: string, operationId: string, properties?: {[key: string]: string}): void;
-  security(message: string, operationId: string, properties?: {[key: string]: string}): void;
-  event(name: string, operationId: string, message? : string, properties?: {[key: string]: string}): void;
+  critical(context: Context, message: string, properties?: {[key: string]: string}): void;
+  error(context: Context, error: Error, message?: string, properties?: {[key: string]: string}): void;
+  warn(context: Context, message: string, properties?: {[key: string]: string}): void;
+  info(context: Context, message: string, properties?: {[key: string]: string}): void;
+  debug(context: Context, message: string, properties?: {[key: string]: string}): void;
+  log(context: Context, message: string, properties?: {[key: string]: string}): void;
+  audit(context: Context, message: string, properties?: {[key: string]: string}): void;
+  security(context: Context, message: string, properties?: {[key: string]: string}): void;
+  event(context: Context, name: string, message? : string, properties?: {[key: string]: string}): void;
 }
