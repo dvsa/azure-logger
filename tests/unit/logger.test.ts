@@ -24,9 +24,14 @@ describe('Logger', () => {
     log: jest.fn(),
     warn: jest.fn(),
   };
+  const mockContext: any = {
+    traceContext:
+    {
+      traceparent: '00-763230142f4317478bf6bdcee3886ef0-2839ff750bf4cc46-00',
+    },
+  };
   const logMessage = 'test log message';
-  const logProps = { componentName: 'azure-logger', projectName: 'DVSA', operationId: 'operation-id' };
-  const operationId = 'operation-id';
+  const logProps = { componentName: 'azure-logger', projectName: 'DVSA', operationId: '763230142f4317478bf6bdcee3886ef0' };
 
   beforeAll(() => {
     mockCreateLogger = jest.spyOn(winston, 'createLogger');
@@ -59,7 +64,7 @@ describe('Logger', () => {
   describe('critical', () => {
     test('should create a critical log', () => {
       // act
-      loggerInstance.critical(logMessage, operationId);
+      loggerInstance.critical(mockContext, logMessage);
       // assert
       expect(mockLogger.log).toHaveBeenCalledWith(
         LOG_LEVELS.CRITICAL,
@@ -70,12 +75,12 @@ describe('Logger', () => {
 
     test('should create a critical log with optional properties', () => {
       // act
-      loggerInstance.critical(logMessage, operationId, { isTest: 'true' });
+      loggerInstance.critical(mockContext, logMessage, { isTest: 'true' });
       // assert
       expect(mockLogger.log).toHaveBeenCalledWith(
         LOG_LEVELS.CRITICAL,
         logMessage,
-        { ...logProps, isTest: 'true'},
+        { ...logProps, isTest: 'true' },
       );
     });
   });
@@ -83,7 +88,7 @@ describe('Logger', () => {
   describe('debug', () => {
     test('should create a debug log', () => {
       // act
-      loggerInstance.debug(logMessage, operationId);
+      loggerInstance.debug(mockContext, logMessage);
       // assert
       expect(mockLogger.log).toHaveBeenCalledWith(
         LOG_LEVELS.DEBUG,
@@ -94,7 +99,7 @@ describe('Logger', () => {
 
     test('should create a debug log with optional properties', () => {
       // act
-      loggerInstance.debug(logMessage, operationId, { isTest: 'true' });
+      loggerInstance.debug(mockContext, logMessage, { isTest: 'true' });
       // assert
       expect(mockLogger.log).toHaveBeenCalledWith(
         LOG_LEVELS.DEBUG,
@@ -107,7 +112,7 @@ describe('Logger', () => {
   describe('audit', () => {
     test('should create a audit log', () => {
       // act
-      loggerInstance.audit(logMessage, operationId);
+      loggerInstance.audit(mockContext, logMessage);
       // assert
       expect(mockLogger.log).toHaveBeenCalledWith(
         LOG_LEVELS.AUDIT,
@@ -118,7 +123,7 @@ describe('Logger', () => {
 
     test('should create a audit log with optional properties', () => {
       // act
-      loggerInstance.audit(logMessage, operationId, { isTest: 'true' });
+      loggerInstance.audit(mockContext, logMessage, { isTest: 'true' });
       // assert
       expect(mockLogger.log).toHaveBeenCalledWith(
         LOG_LEVELS.AUDIT,
@@ -131,7 +136,7 @@ describe('Logger', () => {
   describe('security', () => {
     test('should create a security log', () => {
       // act
-      loggerInstance.security(logMessage, operationId);
+      loggerInstance.security(mockContext, logMessage);
       // assert
       expect(mockLogger.log).toHaveBeenCalledWith(
         LOG_LEVELS.SECURITY,
@@ -142,7 +147,7 @@ describe('Logger', () => {
 
     test('should create a security log with optional properties', () => {
       // act
-      loggerInstance.security(logMessage, operationId, { isTest: 'true' });
+      loggerInstance.security(mockContext, logMessage, { isTest: 'true' });
       // assert
       expect(mockLogger.log).toHaveBeenCalledWith(
         LOG_LEVELS.SECURITY,
@@ -157,7 +162,7 @@ describe('Logger', () => {
 
     test('should create a error log', () => {
       // act
-      loggerInstance.error(mockError, operationId);
+      loggerInstance.error(mockContext, mockError);
       // assert
       expect(mockLogger.error).toHaveBeenCalledWith(
         '',
@@ -167,7 +172,7 @@ describe('Logger', () => {
 
     test('should create a error log with an optional error message', () => {
       // act
-      loggerInstance.error(mockError, operationId, logMessage);
+      loggerInstance.error(mockContext, mockError, logMessage);
       // assert
       expect(mockLogger.error).toHaveBeenCalledWith(
         logMessage,
@@ -177,7 +182,7 @@ describe('Logger', () => {
 
     test('should create a error log with optional properties', () => {
       // act
-      loggerInstance.error(mockError, operationId, undefined, { isTest: 'true' });
+      loggerInstance.error(mockContext, mockError, undefined, { isTest: 'true' });
       // assert
       expect(mockLogger.error).toHaveBeenCalledWith(
         '',
@@ -187,7 +192,7 @@ describe('Logger', () => {
 
     test('should create a error log with an optional message and properties', () => {
       // act
-      loggerInstance.error(mockError, operationId, logMessage, { isTest: 'true' });
+      loggerInstance.error(mockContext, mockError, logMessage, { isTest: 'true' });
       // assert
       expect(mockLogger.error).toHaveBeenCalledWith(
         logMessage,
@@ -199,7 +204,7 @@ describe('Logger', () => {
   describe('info', () => {
     test('should create a info log', () => {
       // act
-      loggerInstance.info(logMessage, operationId);
+      loggerInstance.info(mockContext, logMessage);
       // assert
       expect(mockLogger.info).toHaveBeenCalledWith(
         logMessage,
@@ -209,7 +214,7 @@ describe('Logger', () => {
 
     test('should create a info log with optional properties', () => {
       // act
-      loggerInstance.info(logMessage, operationId, { isTest: 'true' });
+      loggerInstance.info(mockContext, logMessage, { isTest: 'true' });
       // assert
       expect(mockLogger.info).toHaveBeenCalledWith(
         logMessage,
@@ -221,7 +226,7 @@ describe('Logger', () => {
   describe('log', () => {
     test('should create a log', () => {
       // act
-      loggerInstance.log(logMessage, operationId);
+      loggerInstance.log(mockContext, logMessage);
       // assert
       expect(mockLogger.log).toHaveBeenCalledWith(
         LOG_LEVELS.INFO,
@@ -232,7 +237,7 @@ describe('Logger', () => {
 
     test('should create a log with additional properties', () => {
       // act
-      loggerInstance.log(logMessage, operationId, { isTest: 'true' });
+      loggerInstance.log(mockContext, logMessage, { isTest: 'true' });
       // assert
       expect(mockLogger.log).toHaveBeenCalledWith(
         LOG_LEVELS.INFO,
@@ -245,7 +250,7 @@ describe('Logger', () => {
   describe('warn', () => {
     test('should create a warn log', () => {
       // act
-      loggerInstance.warn(logMessage, operationId);
+      loggerInstance.warn(mockContext, logMessage);
       // assert
       expect(mockLogger.log).toHaveBeenCalledWith(
         LOG_LEVELS.WARNING,
@@ -256,7 +261,7 @@ describe('Logger', () => {
 
     test('should create a warn log with optional properties', () => {
       // act
-      loggerInstance.warn(logMessage, operationId, { isTest: 'true' });
+      loggerInstance.warn(mockContext, logMessage, { isTest: 'true' });
       // assert
       expect(mockLogger.log).toHaveBeenCalledWith(
         LOG_LEVELS.WARNING,
@@ -272,7 +277,7 @@ describe('Logger', () => {
 
     test('should create a event log', () => {
       // act
-      loggerInstance.event(mockEventName, operationId);
+      loggerInstance.event(mockContext, mockEventName);
       // assert
       expect(mockLogger.log).toHaveBeenCalledWith(
         LOG_LEVELS.EVENT,
@@ -283,7 +288,7 @@ describe('Logger', () => {
 
     test('should create a event with an optional message', () => {
       // act
-      loggerInstance.event(mockEventName, operationId, mockEventMessage);
+      loggerInstance.event(mockContext, mockEventName, mockEventMessage);
       // assert
       expect(mockLogger.log).toHaveBeenCalledWith(
         LOG_LEVELS.EVENT,
@@ -294,7 +299,7 @@ describe('Logger', () => {
 
     test('should create a event with optional properties', () => {
       // act
-      loggerInstance.event(mockEventName, operationId, undefined, { isTest: 'true' });
+      loggerInstance.event(mockContext, mockEventName, undefined, { isTest: 'true' });
       // assert
       expect(mockLogger.log).toHaveBeenCalledWith(
         LOG_LEVELS.EVENT,
@@ -305,7 +310,7 @@ describe('Logger', () => {
 
     test('should create a event with an optional message and properties', () => {
       // act
-      loggerInstance.event(mockEventName, operationId, mockEventMessage, { isTest: 'true' });
+      loggerInstance.event(mockContext, mockEventName, mockEventMessage, { isTest: 'true' });
       // assert
       expect(mockLogger.log).toHaveBeenCalledWith(
         LOG_LEVELS.EVENT,
