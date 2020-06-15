@@ -10,11 +10,11 @@ import getOperationId from '../../../src/helpers/getOperationId';
 Util.w3cTraceId = jest.fn().mockReturnValue('new-trace-id');
 
 describe('getOperationId', () => {
-  test('should return an new operation id if there is no traceContext', () => {
+  test('should return a new operation id if there is no traceContext', () => {
     expect(getOperationId({} as Context)).toEqual('new-trace-id');
   });
 
-  test('should return an empty string if ther is no traceParent', () => {
+  test('should return a new operation id if there is no traceParent', () => {
     expect(getOperationId({ traceContext: {} } as Context)).toEqual('new-trace-id');
   });
 
