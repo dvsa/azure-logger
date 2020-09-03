@@ -6,11 +6,15 @@ export enum LOG_LEVELS {
   DEBUG = 'debug',
   SECURITY = 'security',
   AUDIT = 'audit',
-  EVENT = 'event'
+  EVENT = 'event',
+  REQUEST = 'request',
+  DEPENDENCY = 'dependency',
 }
 
 export enum APP_INSIGHTS_LOG_LEVELS {
   TRACE = 'trace',
   EXCEPTION = 'exception',
-  EVENT = 'event'
+  EVENT = 'event',
+  REQUEST = 'request',
+  DEPENDENCY = 'dependency',
 }
