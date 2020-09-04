@@ -23,6 +23,8 @@ describe('Logger', () => {
     info: jest.fn(),
     log: jest.fn(),
     warn: jest.fn(),
+    request: jest.fn(),
+    dependency: jest.fn(),
   };
   const mockContext: any = {
     traceContext:
@@ -316,6 +318,36 @@ describe('Logger', () => {
         LOG_LEVELS.EVENT,
         mockEventMessage,
         { ...logProps, name: mockEventName, isTest: 'true' },
+      );
+    });
+  });
+
+  describe('dependency', () => {
+    const mockDependencyName = 'mock-dependency';
+
+    test('should create a dependency log', () => {
+      // act
+      loggerInstance.dependency(mockContext, mockDependencyName);
+      // assert
+      expect(mockLogger.log).toHaveBeenCalledWith(
+        LOG_LEVELS.DEPENDENCY,
+        mockDependencyName,
+        expect.objectContaining({ ...logProps }),
+      );
+    });
+  });
+
+  describe('request', () => {
+    const mockRequestName = 'mock-request';
+
+    test('should create a request log', () => {
+      // act
+      loggerInstance.request(mockContext, mockRequestName);
+      // assert
+      expect(mockLogger.log).toHaveBeenCalledWith(
+        LOG_LEVELS.REQUEST,
+        mockRequestName,
+        expect.objectContaining({ ...logProps }),
       );
     });
   });

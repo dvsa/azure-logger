@@ -14,6 +14,8 @@ import {
   EventInfo,
   TraceInfo,
   ExceptionInfo,
+  DependencyInfo,
+  RequestInfo,
 } from './interfaces';
 import { LOG_LEVELS, APP_INSIGHTS_LOG_LEVELS } from './enums';
 
@@ -29,6 +31,8 @@ class ApplicationInsightsTransport extends Transport {
     [LOG_LEVELS.INFO]: APP_INSIGHTS_LOG_LEVELS.TRACE,
     [LOG_LEVELS.SECURITY]: APP_INSIGHTS_LOG_LEVELS.TRACE,
     [LOG_LEVELS.WARNING]: APP_INSIGHTS_LOG_LEVELS.TRACE,
+    [LOG_LEVELS.DEPENDENCY]: APP_INSIGHTS_LOG_LEVELS.DEPENDENCY,
+    [LOG_LEVELS.REQUEST]: APP_INSIGHTS_LOG_LEVELS.REQUEST,
   };
 
   severityLevelMap = {
@@ -40,6 +44,8 @@ class ApplicationInsightsTransport extends Transport {
     [LOG_LEVELS.INFO]: SeverityLevel.Information,
     [LOG_LEVELS.SECURITY]: SeverityLevel.Information,
     [LOG_LEVELS.WARNING]: SeverityLevel.Warning,
+    [LOG_LEVELS.DEPENDENCY]: SeverityLevel.Information,
+    [LOG_LEVELS.REQUEST]: SeverityLevel.Information,
   };
 
   constructor(options: ApplicationInsightsTransportOptions) {
@@ -61,12 +67,25 @@ class ApplicationInsightsTransport extends Transport {
   }
 
   log(info: LogInfo, callback: Function): void {
+    if (info.sbParentId) {
+      this.client.context.tags[this.client.context.keys.operationParentId] = info.sbParentId;
+    }
+    if (info.sbOperationId) {
+      this.client.context.tags[this.client.context.keys.operationId] = info.sbOperationId;
+    }
+
     switch (this.logLevelsMap[info.level]) {
       case APP_INSIGHTS_LOG_LEVELS.EVENT:
         this.createEvent(info as EventInfo);
         break;
       case APP_INSIGHTS_LOG_LEVELS.EXCEPTION:
         this.createException(info as ExceptionInfo);
+        break;
+      case APP_INSIGHTS_LOG_LEVELS.DEPENDENCY:
+        this.createDependency(info as DependencyInfo);
+        break;
+      case APP_INSIGHTS_LOG_LEVELS.REQUEST:
+        this.createRequest(info as RequestInfo);
         break;
       case APP_INSIGHTS_LOG_LEVELS.TRACE:
       default:
@@ -149,6 +168,28 @@ class ApplicationInsightsTransport extends Transport {
     }
 
     this.client.trackEvent(event);
+  }
+
+  private createDependency(info: DependencyInfo): void {
+    const dependency = {
+      ...info,
+      tagOverrides: {
+        [this.client.context.keys.operationId]: info.operationId,
+      },
+    };
+
+    this.client.trackDependency(dependency);
+  }
+
+  private createRequest(info: RequestInfo): void {
+    const request = {
+      ...info,
+      tagOverrides: {
+        [this.client.context.keys.operationId]: info.operationId,
+      },
+    };
+
+    this.client.trackRequest(request);
   }
 }
 
