@@ -67,13 +67,6 @@ class ApplicationInsightsTransport extends Transport {
   }
 
   log(info: LogInfo, callback: Function): void {
-    if (info.sbParentId) {
-      this.client.context.tags[this.client.context.keys.operationParentId] = info.sbParentId;
-    }
-    if (info.sbOperationId) {
-      this.client.context.tags[this.client.context.keys.operationId] = info.sbOperationId;
-    }
-
     switch (this.logLevelsMap[info.level]) {
       case APP_INSIGHTS_LOG_LEVELS.EVENT:
         this.createEvent(info as EventInfo);
@@ -107,7 +100,7 @@ class ApplicationInsightsTransport extends Transport {
       severity: this.severityLevelMap[info.level],
       message: info.message,
       tagOverrides: {
-        [this.client.context.keys.operationId]: operationId,
+        [this.client.context.keys.operationId]: info.sbOperationId || info.operationId,
       },
       properties: {
         ...otherProperties,
@@ -129,7 +122,7 @@ class ApplicationInsightsTransport extends Transport {
       severity: SeverityLevel.Error,
       exception: error,
       tagOverrides: {
-        [this.client.context.keys.operationId]: operationId,
+        [this.client.context.keys.operationId]: info.sbOperationId || info.operationId,
       },
       properties: {
         ...otherProperties,
@@ -156,7 +149,7 @@ class ApplicationInsightsTransport extends Transport {
     const event: EventTelemetry = {
       name,
       tagOverrides: {
-        [this.client.context.keys.operationId]: operationId,
+        [this.client.context.keys.operationId]: info.sbOperationId || info.operationId,
       },
       properties: {
         ...otherProperties,
@@ -174,7 +167,7 @@ class ApplicationInsightsTransport extends Transport {
     const dependency = {
       ...info,
       tagOverrides: {
-        [this.client.context.keys.operationId]: info.operationId,
+        [this.client.context.keys.operationId]: info.sbOperationId || info.operationId,
       },
     };
 
@@ -185,7 +178,7 @@ class ApplicationInsightsTransport extends Transport {
     const request = {
       ...info,
       tagOverrides: {
-        [this.client.context.keys.operationId]: info.operationId,
+        [this.client.context.keys.operationId]: info.sbOperationId || info.operationId,
       },
     };
 
