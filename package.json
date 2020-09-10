@@ -32,7 +32,7 @@
   "dependencies": {
     "@opentelemetry/api": "^0.10.2",
     "@opentelemetry/tracing": "^0.10.2",
-    "applicationinsights": "^1.8.5",
+    "applicationinsights": "^1.8.6",
     "dotenv": "^8.2.0",
     "winston": "3.1.0",
     "winston-transport": "^4.3.0"
