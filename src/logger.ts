@@ -94,18 +94,11 @@ class Logger implements ILogger {
     });
   }
 
-  info(context: Context, message: string, properties?: { [key: string]: string }): void {
-    this.loggerInstance.info(message, {
-      projectName: this.projectName,
-      componentName: this.componentName,
-      operationId: getOperationId(context),
-      sbOperationId: getServiceBusOperationId(context),
-      sbParentId: getServiceBusParentId(context),
-      ...properties,
-    });
+  log(context: Context | undefined, message: string, properties?: { [key: string]: string }): void {
+    this.info(context, message, properties);
   }
 
-  log(context: Context | undefined, message: string, properties?: { [key: string]: string }): void {
+  info(context: Context | undefined, message: string, properties?: { [key: string]: string }): void {
     let traceProps = {};
     if (context) {
       traceProps = {
@@ -134,14 +127,21 @@ class Logger implements ILogger {
     });
   }
 
-  event(context: Context, name: string, message?: string, properties?: { [key: string]: string }): void {
+  event(context: Context | undefined, name: string, message?: string, properties?: { [key: string]: string }): void {
+    let traceProps = {};
+    if (context) {
+      traceProps = {
+        operationId: getOperationId(context),
+        sbOperationId: getServiceBusOperationId(context),
+        sbParentId: getServiceBusParentId(context),
+      };
+    }
+
     this.loggerInstance.log(LOG_LEVELS.EVENT, message || '', {
       name,
       projectName: this.projectName,
       componentName: this.componentName,
-      operationId: getOperationId(context),
-      sbOperationId: getServiceBusOperationId(context),
-      sbParentId: getServiceBusParentId(context),
+      ...traceProps,
       ...properties,
     });
   }
