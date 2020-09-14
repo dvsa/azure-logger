@@ -13,7 +13,7 @@ import { AzureFunction, Context, HttpRequest } from '@azure/functions';
  * @param args any extra args to pass to the function invocation
  */
 export const nonHttpTriggerContextWrapper = async (fn: AzureFunction, context: Context, ...args: any[]): Promise<void> => {
-  const operationName = context.executionContext.functionName;
+  const operationName = context.executionContext?.functionName || '';
   const correlationContext = startOperation(context as any, operationName);
 
   return wrapWithCorrelationContext(async () => {

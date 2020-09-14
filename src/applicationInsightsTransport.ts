@@ -92,16 +92,15 @@ class ApplicationInsightsTransport extends Transport {
     const {
       message,
       meta,
-      operationId,
       ...otherProperties
     } = info;
+
+    const manualTraceId = info.sbOperationId || info.operationId;
 
     this.client.trackTrace({
       severity: this.severityLevelMap[info.level],
       message: info.message,
-      tagOverrides: {
-        [this.client.context.keys.operationId]: info.sbOperationId || info.operationId,
-      },
+      tagOverrides: manualTraceId ? { [this.client.context.keys.operationId]: manualTraceId } : undefined,
       properties: {
         ...otherProperties,
       },

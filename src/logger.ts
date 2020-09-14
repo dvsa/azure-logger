@@ -105,13 +105,20 @@ class Logger implements ILogger {
     });
   }
 
-  log(context: Context, message: string, properties?: { [key: string]: string }): void {
+  log(context: Context | undefined, message: string, properties?: { [key: string]: string }): void {
+    let traceProps = {};
+    if (context) {
+      traceProps = {
+        operationId: getOperationId(context),
+        sbOperationId: getServiceBusOperationId(context),
+        sbParentId: getServiceBusParentId(context),
+      };
+    }
+
     this.loggerInstance.log(LOG_LEVELS.INFO, message, {
       projectName: this.projectName,
       componentName: this.componentName,
-      operationId: getOperationId(context),
-      sbOperationId: getServiceBusOperationId(context),
-      sbParentId: getServiceBusParentId(context),
+      ...traceProps,
       ...properties,
     });
   }

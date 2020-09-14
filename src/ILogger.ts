@@ -8,7 +8,7 @@ export default interface ILogger {
   warn(context: Context, message: string, properties?: {[key: string]: string}): void;
   info(context: Context, message: string, properties?: {[key: string]: string}): void;
   debug(context: Context, message: string, properties?: {[key: string]: string}): void;
-  log(context: Context, message: string, properties?: {[key: string]: string}): void;
+  log(context: Context | undefined, message: string, properties?: {[key: string]: string}): void;
   audit(context: Context, message: string, properties?: {[key: string]: string}): void;
   security(context: Context, message: string, properties?: {[key: string]: string}): void;
   event(context: Context, name: string, message? : string, properties?: {[key: string]: string}): void;
