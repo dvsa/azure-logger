@@ -12,7 +12,7 @@ import { AzureFunction, Context, HttpRequest } from '@azure/functions';
  * @param context function context
  * @param args any extra args to pass to the function invocation
  */
-export const nonHttpTriggerContextWrapper = async (fn: AzureFunction, context: Context, ...args: any[]): Promise<void> => {
+const nonHttpTriggerContextWrapper = async (fn: AzureFunction, context: Context, ...args: any[]): Promise<void> => {
   const operationName = context.executionContext?.functionName || '';
   const correlationContext = startOperation(context as any, operationName);
 
@@ -30,11 +30,16 @@ export const nonHttpTriggerContextWrapper = async (fn: AzureFunction, context: C
  * @param context function context
  * @param req HTTP request object
  */
-export const httpTriggerContextWrapper = async (fn: AzureFunction, context: Context, req: HttpRequest): Promise<void> => {
+const httpTriggerContextWrapper = async (fn: AzureFunction, context: Context, req: HttpRequest): Promise<void> => {
   const correlationContext = startOperation(context as any, req as any);
 
   return wrapWithCorrelationContext(async () => {
     await fn(context, req);
     defaultClient.flush();
   }, correlationContext || undefined)();
+};
+
+export default {
+  nonHttpTriggerContextWrapper,
+  httpTriggerContextWrapper,
 };
