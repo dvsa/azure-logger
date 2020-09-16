@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-unresolved
 import { Context } from '@azure/functions';
 import Traceparent from 'applicationinsights/out/Library/Traceparent';
 

@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-unresolved
 import { Context } from '@azure/functions';
 
 function getServiceBusOperationId(context: Context): string | undefined {

@@ -1,7 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, lines-between-class-members */
 import { Context } from '@azure/functions';
 import winston, { Logger as WinstonLogger } from 'winston';
 import Transport from 'winston-transport';
+
 import config from './config';
 import ILogger, { Props } from './ILogger';
 import ApplicationInsightsTransport from './applicationInsightsTransport';
@@ -38,125 +38,71 @@ class Logger implements ILogger {
     });
   }
 
-  critical(message: string, properties?: Props): void;
-  critical(context: Context, message: string, properties?: Props): void;
-  critical(...args: any[]): void {
-    const { message, properties } = this.parseArgs(args);
-    this.loggerInstance.log(LOG_LEVELS.CRITICAL, message, properties);
+  critical(message: string, properties?: Props): void {
+    const props = this.extendProps(properties);
+    this.loggerInstance.log(LOG_LEVELS.CRITICAL, message, props);
   }
 
-  debug(message: string, properties?: Props): void;
-  debug(context: Context, message: string, properties?: Props): void;
-  debug(...args: any[]): void {
-    const { message, properties } = this.parseArgs(args);
-    this.loggerInstance.log(LOG_LEVELS.DEBUG, message, properties);
+  debug(message: string, properties?: Props): void {
+    const props = this.extendProps(properties);
+    this.loggerInstance.log(LOG_LEVELS.DEBUG, message, props);
   }
 
-  audit(message: string, properties?: Props): void;
-  audit(context: Context, message: string, properties?: Props): void;
-  audit(...args: any[]): void {
-    const { message, properties } = this.parseArgs(args);
-    this.loggerInstance.log(LOG_LEVELS.AUDIT, message, properties);
+  audit(message: string, properties?: Props): void {
+    const props = this.extendProps(properties);
+    this.loggerInstance.log(LOG_LEVELS.AUDIT, message, props);
   }
 
-  security(message: string, properties?: Props): void;
-  security(context: Context, message: string, properties?: Props): void;
-  security(...args: any[]): void {
-    const { message, properties } = this.parseArgs(args);
-    this.loggerInstance.log(LOG_LEVELS.SECURITY, message, properties);
+  security(message: string, properties?: Props): void {
+    const props = this.extendProps(properties);
+    this.loggerInstance.log(LOG_LEVELS.SECURITY, message, props);
   }
 
-  log(message: string, properties?: Props): void;
-  log(context: Context, message: string, properties?: Props): void;
-  log(...args: any[]): void {
-    const { message, properties } = this.parseArgs(args);
-    this.loggerInstance.log(LOG_LEVELS.INFO, message, properties);
+  log(message: string, properties?: Props): void {
+    this.info(message, properties);
   }
 
-  info(message: string, properties?: Props): void;
-  info(context: Context, message: string, properties?: Props): void;
-  info(...args: any[]): void {
-    const { message, properties } = this.parseArgs(args);
-    this.loggerInstance.log(LOG_LEVELS.INFO, message, properties);
+  info(message: string, properties?: Props): void {
+    const props = this.extendProps(properties);
+    this.loggerInstance.log(LOG_LEVELS.INFO, message, props);
   }
 
-  warn(message: string, properties?: Props): void;
-  warn(context: Context, message: string, properties?: Props): void;
-  warn(...args: any[]): void {
-    const { message, properties } = this.parseArgs(args);
-    this.loggerInstance.log(LOG_LEVELS.WARNING, message, properties);
+  warn(message: string, properties?: Props): void {
+    const props = this.extendProps(properties);
+    this.loggerInstance.log(LOG_LEVELS.WARNING, message, props);
   }
 
-  error(error: Error, message?: string, properties?: Props): void;
-  error(context: Context, error: Error, message?: string, properties?: Props): void;
-  error(...args: any[]): void {
-    let context;
-    let error;
-    let message;
-    let properties;
-
-    if (args[0] instanceof Error) { // Method signature #1 with error first arg
-      [error, message, properties] = args;
-    } else { // #2 with context first arg
-      [context, error, message, properties] = args;
-    }
-
+  error(error: Error, message?: string, properties?: Props): void {
+    const props = this.extendProps(properties);
     this.loggerInstance.error(message || '', {
       error,
-      ...this.extendProps(properties, context),
+      ...props,
     });
   }
 
-  event(name: string, message?: string, properties?: Props): void;
-  event(context: Context, name: string, message?: string, properties?: Props): void;
-  event(...args: any[]): void {
-    let context;
-    let name;
-    let message;
-    let properties;
-
-    if (typeof args[0] === 'string') { // Method signature #1 with name first arg
-      [name, message, properties] = args;
-    } else { // #2 with context first arg
-      [context, name, message, properties] = args;
-    }
-
+  event(name: string, message?: string, properties?: Props): void {
+    const props = this.extendProps(properties);
     this.loggerInstance.log(LOG_LEVELS.EVENT, message || '', {
       name,
-      ...this.extendProps(properties, context),
+      ...props,
     });
   }
 
   dependency(context: Context, name: string, data?: string, properties?: Props): void {
+    const props = this.extendProps(properties, context);
     this.loggerInstance.log(LOG_LEVELS.DEPENDENCY, name || 'Dependency', {
       name,
       data,
-      ...this.extendProps(properties, context),
+      ...props,
     });
   }
 
   request(context: Context, name: string, properties?: Props): void {
+    const props = this.extendProps(properties, context);
     this.loggerInstance.log(LOG_LEVELS.REQUEST, name || 'Request', {
       name,
-      ...this.extendProps(properties, context),
+      ...props,
     });
-  }
-
-  private parseArgs(args: any[]): { message: string; properties: object } {
-    let context;
-    let message;
-    let properties;
-
-    if (typeof args[0] === 'string') { // Method signature #1 with message first arg
-      [message, properties] = args;
-    } else { // #2 with context first arg
-      [context, message, properties] = args;
-    }
-
-    return {
-      message,
-      properties: this.extendProps(properties, context),
-    };
   }
 
   private extendProps(properties?: Props, context?: Context): Props {

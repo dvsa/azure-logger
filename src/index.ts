@@ -1,8 +1,14 @@
 import Logger from './logger';
 import ILogger from './ILogger';
-import azureFunctions from './azureFunctions';
+import { nonHttpTriggerContextWrapper, httpTriggerContextWrapper } from './correlationWrappers';
 import getOperationId from './helpers/getOperationId';
 
+const correlationUtils = {
+  nonHttpTriggerContextWrapper,
+  httpTriggerContextWrapper,
+  getOperationId,
+};
+
 export {
-  Logger, ILogger, azureFunctions, getOperationId,
+  Logger, ILogger, correlationUtils,
 };

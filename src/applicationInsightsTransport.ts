@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   setup,
   defaultClient,
@@ -92,15 +91,16 @@ class ApplicationInsightsTransport extends Transport {
     const {
       message,
       meta,
+      operationId,
       ...otherProperties
     } = info;
-
-    const manualTraceId = info.sbOperationId || info.operationId;
 
     this.client.trackTrace({
       severity: this.severityLevelMap[info.level],
       message: info.message,
-      tagOverrides: manualTraceId ? { [this.client.context.keys.operationId]: manualTraceId } : undefined,
+      tagOverrides: {
+        [this.client.context.keys.operationId]: info.sbOperationId || info.operationId,
+      },
       properties: {
         ...otherProperties,
       },
