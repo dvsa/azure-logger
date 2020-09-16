@@ -39,87 +39,109 @@ class Logger implements ILogger {
   }
 
   critical(message: string, properties?: Props): void {
-    const props = this.extendProps(properties);
-    this.loggerInstance.log(LOG_LEVELS.CRITICAL, message, props);
+    this.loggerInstance.log(LOG_LEVELS.CRITICAL, message, {
+      projectName: this.projectName,
+      componentName: this.componentName,
+      ...properties,
+    });
   }
 
   debug(message: string, properties?: Props): void {
-    const props = this.extendProps(properties);
-    this.loggerInstance.log(LOG_LEVELS.DEBUG, message, props);
+    this.loggerInstance.log(LOG_LEVELS.DEBUG, message, {
+      projectName: this.projectName,
+      componentName: this.componentName,
+      ...properties,
+    });
   }
 
   audit(message: string, properties?: Props): void {
-    const props = this.extendProps(properties);
-    this.loggerInstance.log(LOG_LEVELS.AUDIT, message, props);
+    this.loggerInstance.log(LOG_LEVELS.AUDIT, message, {
+      projectName: this.projectName,
+      componentName: this.componentName,
+      ...properties,
+    });
   }
 
   security(message: string, properties?: Props): void {
-    const props = this.extendProps(properties);
-    this.loggerInstance.log(LOG_LEVELS.SECURITY, message, props);
-  }
-
-  log(message: string, properties?: Props): void {
-    this.info(message, properties);
-  }
-
-  info(message: string, properties?: Props): void {
-    const props = this.extendProps(properties);
-    this.loggerInstance.log(LOG_LEVELS.INFO, message, props);
-  }
-
-  warn(message: string, properties?: Props): void {
-    const props = this.extendProps(properties);
-    this.loggerInstance.log(LOG_LEVELS.WARNING, message, props);
+    this.loggerInstance.log(LOG_LEVELS.SECURITY, message, {
+      projectName: this.projectName,
+      componentName: this.componentName,
+      ...properties,
+    });
   }
 
   error(error: Error, message?: string, properties?: Props): void {
-    const props = this.extendProps(properties);
     this.loggerInstance.error(message || '', {
+      projectName: this.projectName,
+      componentName: this.componentName,
       error,
-      ...props,
+      ...properties,
+    });
+  }
+
+  info(message: string, properties?: Props): void {
+    this.loggerInstance.info(message, {
+      projectName: this.projectName,
+      componentName: this.componentName,
+      ...properties,
+    });
+  }
+
+  log(message: string, properties?: Props): void {
+    this.loggerInstance.log(LOG_LEVELS.INFO, message, {
+      projectName: this.projectName,
+      componentName: this.componentName,
+      ...properties,
+    });
+  }
+
+  warn(message: string, properties?: Props): void {
+    this.loggerInstance.log(LOG_LEVELS.WARNING, message, {
+      projectName: this.projectName,
+      componentName: this.componentName,
+      ...properties,
     });
   }
 
   event(name: string, message?: string, properties?: Props): void {
-    const props = this.extendProps(properties);
     this.loggerInstance.log(LOG_LEVELS.EVENT, message || '', {
+      projectName: this.projectName,
+      componentName: this.componentName,
       name,
-      ...props,
+      ...properties,
     });
   }
 
   dependency(context: Context, name: string, data?: string, properties?: Props): void {
-    const props = this.extendProps(properties, context);
+    const traceIds = this.getTraceIds(context);
+
     this.loggerInstance.log(LOG_LEVELS.DEPENDENCY, name || 'Dependency', {
+      projectName: this.projectName,
+      componentName: this.componentName,
       name,
       data,
-      ...props,
+      ...traceIds,
+      ...properties,
     });
   }
 
   request(context: Context, name: string, properties?: Props): void {
-    const props = this.extendProps(properties, context);
+    const traceIds = this.getTraceIds(context);
+
     this.loggerInstance.log(LOG_LEVELS.REQUEST, name || 'Request', {
+      projectName: this.projectName,
+      componentName: this.componentName,
       name,
-      ...props,
+      ...traceIds,
+      ...properties,
     });
   }
 
-  private extendProps(properties?: Props, context?: Context): Props {
-    let traceIds;
-    if (context) {
-      traceIds = { // Context provided so set trace ids for manual correlation
-        operationId: getOperationId(context),
-        sbOperationId: getServiceBusOperationId(context),
-        sbParentId: getServiceBusParentId(context),
-      };
-    }
-
+  private getTraceIds(context: Context): object {
     return {
-      projectName: this.projectName,
-      componentName: this.componentName,
-      ...traceIds,
-      ...properties,
+      operationId: getOperationId(context),
+      sbOperationId: getServiceBusOperationId(context),
+      sbParentId: getServiceBusParentId(context),
     };
   }
 
