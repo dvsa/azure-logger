@@ -1,6 +1,6 @@
 {
   "name": "@dvsa/azure-logger",
-  "version": "2.1.6",
+  "version": "3.0.0",
   "description": "Shareable Logging Facade, implemented with Winston",
   "main": "dist/index.js",
   "scripts": {
@@ -15,27 +15,25 @@
   "license": "MIT",
   "repository": "github:dvsa/azure-logger",
   "devDependencies": {
-    "@azure/functions": "^1.2.0",
-    "@babel/core": "^7.8.4",
-    "@babel/preset-env": "^7.8.4",
-    "@babel/preset-typescript": "^7.8.3",
+    "@azure/functions": "^1.2.2",
+    "@babel/core": "^7.11.6",
+    "@babel/preset-env": "^7.11.5",
+    "@babel/preset-typescript": "^7.10.4",
     "@dvsa/eslint-config-ts": "^1.0.1",
-    "@types/jest": "^25.1.2",
-    "@types/node": "^13.7.1",
-    "@types/uuid": "^8.0.0",
-    "babel-jest": "^25.1.0",
+    "@types/jest": "^25.2.3",
+    "@types/node": "^13.13.21",
+    "@types/uuid": "^8.3.0",
+    "babel-jest": "^25.5.1",
     "eslint": "^6.8.0",
-    "jest": "^25.1.0",
+    "jest": "^25.5.4",
     "rimraf": "^3.0.2",
-    "typescript": "^3.7.5"
+    "typescript": "^3.9.7"
   },
   "dependencies": {
-    "@opentelemetry/api": "^0.10.2",
-    "@opentelemetry/tracing": "^0.10.2",
     "applicationinsights": "^1.8.7",
     "dotenv": "^8.2.0",
     "winston": "3.1.0",
-    "winston-transport": "^4.3.0"
+    "winston-transport": "^4.4.0"
   },
   "jest": {
     "moduleFileExtensions": [
