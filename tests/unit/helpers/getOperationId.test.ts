@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-unresolved
 import { Context } from '@azure/functions';
 import Util from 'applicationinsights/out/Library/Util';
 import getOperationId from '../../../src/helpers/getOperationId';

@@ -1,9 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Context } from '@azure/functions';
 import winston, { Logger as WinstonLogger } from 'winston';
 import Transport from 'winston-transport';
+
 import config from './config';
-import ILogger from './ILogger';
+import ILogger, { Props } from './ILogger';
 import ApplicationInsightsTransport from './applicationInsightsTransport';
 import { LOG_LEVELS } from './enums';
 import getOperationId from './helpers/getOperationId';
@@ -38,130 +38,111 @@ class Logger implements ILogger {
     });
   }
 
-  critical(context: Context, message: string, properties?: { [key: string]: string }): void {
+  critical(message: string, properties?: Props): void {
     this.loggerInstance.log(LOG_LEVELS.CRITICAL, message, {
       projectName: this.projectName,
       componentName: this.componentName,
-      operationId: getOperationId(context),
-      sbOperationId: getServiceBusOperationId(context),
-      sbParentId: getServiceBusParentId(context),
       ...properties,
     });
   }
 
-  debug(context: Context, message: string, properties?: { [key: string]: string }): void {
+  debug(message: string, properties?: Props): void {
     this.loggerInstance.log(LOG_LEVELS.DEBUG, message, {
       projectName: this.projectName,
       componentName: this.componentName,
-      operationId: getOperationId(context),
-      sbOperationId: getServiceBusOperationId(context),
-      sbParentId: getServiceBusParentId(context),
       ...properties,
     });
   }
 
-  audit(context: Context, message: string, properties?: { [key: string]: string }): void {
+  audit(message: string, properties?: Props): void {
     this.loggerInstance.log(LOG_LEVELS.AUDIT, message, {
       projectName: this.projectName,
       componentName: this.componentName,
-      operationId: getOperationId(context),
-      sbOperationId: getServiceBusOperationId(context),
-      sbParentId: getServiceBusParentId(context),
       ...properties,
     });
   }
 
-  security(context: Context, message: string, properties?: { [key: string]: string }): void {
+  security(message: string, properties?: Props): void {
     this.loggerInstance.log(LOG_LEVELS.SECURITY, message, {
       projectName: this.projectName,
       componentName: this.componentName,
-      operationId: getOperationId(context),
-      sbOperationId: getServiceBusOperationId(context),
-      sbParentId: getServiceBusParentId(context),
       ...properties,
     });
   }
 
-  error(context: Context, error: Error, message?: string, properties?: { [key: string]: string }): void {
+  error(error: Error, message?: string, properties?: Props): void {
     this.loggerInstance.error(message || '', {
-      error,
       projectName: this.projectName,
       componentName: this.componentName,
-      operationId: getOperationId(context),
-      sbOperationId: getServiceBusOperationId(context),
-      sbParentId: getServiceBusParentId(context),
+      error,
       ...properties,
     });
   }
 
-  info(context: Context, message: string, properties?: { [key: string]: string }): void {
+  info(message: string, properties?: Props): void {
     this.loggerInstance.info(message, {
       projectName: this.projectName,
       componentName: this.componentName,
-      operationId: getOperationId(context),
-      sbOperationId: getServiceBusOperationId(context),
-      sbParentId: getServiceBusParentId(context),
       ...properties,
     });
   }
 
-  log(context: Context, message: string, properties?: { [key: string]: string }): void {
+  log(message: string, properties?: Props): void {
     this.loggerInstance.log(LOG_LEVELS.INFO, message, {
       projectName: this.projectName,
       componentName: this.componentName,
-      operationId: getOperationId(context),
-      sbOperationId: getServiceBusOperationId(context),
-      sbParentId: getServiceBusParentId(context),
       ...properties,
     });
   }
 
-  warn(context: Context, message: string, properties?: { [key: string]: string }): void {
+  warn(message: string, properties?: Props): void {
     this.loggerInstance.log(LOG_LEVELS.WARNING, message, {
       projectName: this.projectName,
       componentName: this.componentName,
-      operationId: getOperationId(context),
-      sbOperationId: getServiceBusOperationId(context),
-      sbParentId: getServiceBusParentId(context),
       ...properties,
     });
   }
 
-  event(context: Context, name: string, message?: string, properties?: { [key: string]: string }): void {
+  event(name: string, message?: string, properties?: Props): void {
     this.loggerInstance.log(LOG_LEVELS.EVENT, message || '', {
-      name,
       projectName: this.projectName,
       componentName: this.componentName,
-      operationId: getOperationId(context),
-      sbOperationId: getServiceBusOperationId(context),
-      sbParentId: getServiceBusParentId(context),
+      name,
       ...properties,
     });
   }
 
-  dependency(context: Context, name: string, data?: string, properties?: { [key: string]: any }): void {
+  dependency(context: Context, name: string, data?: string, properties?: Props): void {
+    const traceIds = this.getTraceIds(context);
+
     this.loggerInstance.log(LOG_LEVELS.DEPENDENCY, name || 'Dependency', {
+      projectName: this.projectName,
+      componentName: this.componentName,
       name,
       data,
-      projectName: this.projectName,
-      componentName: this.componentName,
-      operationId: getOperationId(context),
-      sbOperationId: getServiceBusOperationId(context),
-      sbParentId: getServiceBusParentId(context),
+      ...traceIds,
       ...properties,
     });
   }
 
-  request(context: Context, name: string, properties?: { [key: string]: any }): void {
+  request(context: Context, name: string, properties?: Props): void {
+    const traceIds = this.getTraceIds(context);
+
     this.loggerInstance.log(LOG_LEVELS.REQUEST, name || 'Request', {
-      name,
       projectName: this.projectName,
       componentName: this.componentName,
+      name,
+      ...traceIds,
+      ...properties,
+    });
+  }
+
+  private getTraceIds(context: Context): object {
+    return {
       operationId: getOperationId(context),
       sbOperationId: getServiceBusOperationId(context),
       sbParentId: getServiceBusParentId(context),
-      ...properties,
-    });
+    };
   }
 
   private getWinstonTransports(): Transport[] {

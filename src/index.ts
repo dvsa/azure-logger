@@ -1,5 +1,6 @@
 import Logger from './logger';
 import ILogger from './ILogger';
-import Telemetry from './telemetry';
+import getOperationId from './helpers/getOperationId';
 
-export { Logger, ILogger, Telemetry };
+export { Logger, ILogger, getOperationId };
+export * from './correlationWrappers';

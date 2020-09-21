@@ -41,21 +41,38 @@ import { Logger } from '@dvsa/azure-logger';
 export default new Logger('ftts', 'ftts-location-api');
 ```
 
-2. Whenever you want to log an item import the logger.ts file. You must always pass in the azure context into the logger on every calls so that you can trace all logs in a single function call.
+2) For Azure Functions, two wrappers are provided to enable auto correlation of all logs and telemetry including external requests and dependencies.
+For HTTP triggers use the `httpTriggerContextWrapper` with req passed in. Use `nonHttpTriggerContextWrapper` for all other trigger types.
+For example, wrap a time trigger function in your function index file like so:
+```typescript
+import { nonHttpTriggerContextWrapper } from '@dvsa/azure-logger';
+import { AzureFunction, Context } from '@azure/functions';
+
+const myTimeTrigger: AzureFunction = async (): Promise<void> => {
+    // do something
+};
+
+export default async (context: Context): Promise<void> => nonHttpTriggerContextWrapper(myTimeTrigger, context);
+```
+
+Request and dependency log methods are still provided for manual tracing if it is needed e.g. for service bus correlation.
+These require context to be passed in to fetch the correct trace ids.
+
+3) Whenever you want to log an item import the logger.ts file.
 ```typescript
 import logger from './logger';
 
-function getData(context: Context): void {
+function getData(): void {
     try {
         // Do calculations
     } catch(error) {
-        logger.error(context, error);
+        logger.error(error);
     }
 }
 ```
 
 ## APPINSIGHTS_INSTRUMENTATIONKEY
 
- When using an Azure app function the following environment variable must be present and contain the key for the application insights instance you wish to use.
+When using an Azure function app the following environment variable must be present and contain the key for the application insights instance you wish to use.
   
-  APPINSIGHTS_INSTRUMENTATIONKEY
+APPINSIGHTS_INSTRUMENTATIONKEY
