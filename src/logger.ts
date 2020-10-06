@@ -165,11 +165,15 @@ class Logger implements ILogger {
   }
 
   private getTraceIds(context: Context): object {
-    return {
-      operationId: getOperationId(context),
-      sbOperationId: getServiceBusOperationId(context),
-      sbParentId: getServiceBusParentId(context),
-    };
+    if (context) {
+      return {
+        operationId: getOperationId(context),
+        sbOperationId: getServiceBusOperationId(context),
+        sbParentId: getServiceBusParentId(context),
+      };
+    }
+
+    return {};
   }
 
   private getWinstonTransports(): Transport[] {
