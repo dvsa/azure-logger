@@ -39,76 +39,103 @@ class Logger implements ILogger {
   }
 
   critical(message: string, properties?: Props): void {
+    const traceIds = this.getTraceIds(properties?.context);
+
     this.loggerInstance.log(LOG_LEVELS.CRITICAL, message, {
       projectName: this.projectName,
       componentName: this.componentName,
       ...properties,
+      ...traceIds,
     });
   }
 
   debug(message: string, properties?: Props): void {
+    const traceIds = this.getTraceIds(properties?.context);
+
     this.loggerInstance.log(LOG_LEVELS.DEBUG, message, {
       projectName: this.projectName,
       componentName: this.componentName,
       ...properties,
+      ...traceIds,
     });
   }
 
   audit(message: string, properties?: Props): void {
+    const traceIds = this.getTraceIds(properties?.context);
+
     this.loggerInstance.log(LOG_LEVELS.AUDIT, message, {
       projectName: this.projectName,
       componentName: this.componentName,
       ...properties,
+      ...traceIds,
     });
   }
 
   security(message: string, properties?: Props): void {
+    const traceIds = this.getTraceIds(properties?.context);
+
     this.loggerInstance.log(LOG_LEVELS.SECURITY, message, {
       projectName: this.projectName,
       componentName: this.componentName,
       ...properties,
+      ...traceIds,
     });
   }
 
   error(error: Error, message?: string, properties?: Props): void {
+    const traceIds = this.getTraceIds(properties?.context);
+
     this.loggerInstance.error(message || '', {
       projectName: this.projectName,
       componentName: this.componentName,
       error,
       ...properties,
+      ...traceIds,
     });
   }
 
   info(message: string, properties?: Props): void {
+    const traceIds = this.getTraceIds(properties?.context);
+
     this.loggerInstance.info(message, {
       projectName: this.projectName,
       componentName: this.componentName,
       ...properties,
+      ...traceIds,
     });
   }
 
   log(message: string, properties?: Props): void {
+    const traceIds = this.getTraceIds(properties?.context);
+
     this.loggerInstance.log(LOG_LEVELS.INFO, message, {
       projectName: this.projectName,
       componentName: this.componentName,
       ...properties,
+      ...traceIds,
     });
   }
 
   warn(message: string, properties?: Props): void {
+    const traceIds = this.getTraceIds(properties?.context);
+
     this.loggerInstance.log(LOG_LEVELS.WARNING, message, {
       projectName: this.projectName,
       componentName: this.componentName,
       ...properties,
+      ...traceIds,
     });
   }
 
   event(name: string, message?: string, properties?: Props): void {
+    const traceIds = this.getTraceIds(properties?.context);
+
     this.loggerInstance.log(LOG_LEVELS.EVENT, message || '', {
       projectName: this.projectName,
       componentName: this.componentName,
       name,
       ...properties,
+      ...traceIds,
     });
   }
 
