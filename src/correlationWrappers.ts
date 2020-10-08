@@ -18,7 +18,7 @@ export const nonHttpTriggerContextWrapper = async (fn: AzureFunction, context: C
 
   return wrapWithCorrelationContext(async () => {
     await fn(context, ...args);
-    defaultClient.flush();
+    if (defaultClient) defaultClient.flush();
   }, correlationContext || undefined)();
 };
 
@@ -35,6 +35,6 @@ export const httpTriggerContextWrapper = async (fn: AzureFunction, context: Cont
 
   return wrapWithCorrelationContext(async () => {
     await fn(context, req);
-    defaultClient.flush();
+    if (defaultClient) defaultClient.flush();
   }, correlationContext || undefined)();
 };
