@@ -40,6 +40,7 @@ class Logger implements ILogger {
 
   critical(message: string, properties?: Props): void {
     const traceIds = this.getTraceIds(properties?.context);
+    delete properties?.context;
 
     this.loggerInstance.log(LOG_LEVELS.CRITICAL, message, {
       projectName: this.projectName,
@@ -51,6 +52,7 @@ class Logger implements ILogger {
 
   debug(message: string, properties?: Props): void {
     const traceIds = this.getTraceIds(properties?.context);
+    delete properties?.context;
 
     this.loggerInstance.log(LOG_LEVELS.DEBUG, message, {
       projectName: this.projectName,
@@ -62,6 +64,7 @@ class Logger implements ILogger {
 
   audit(message: string, properties?: Props): void {
     const traceIds = this.getTraceIds(properties?.context);
+    delete properties?.context;
 
     this.loggerInstance.log(LOG_LEVELS.AUDIT, message, {
       projectName: this.projectName,
@@ -73,6 +76,7 @@ class Logger implements ILogger {
 
   security(message: string, properties?: Props): void {
     const traceIds = this.getTraceIds(properties?.context);
+    delete properties?.context;
 
     this.loggerInstance.log(LOG_LEVELS.SECURITY, message, {
       projectName: this.projectName,
@@ -84,6 +88,7 @@ class Logger implements ILogger {
 
   error(error: Error, message?: string, properties?: Props): void {
     const traceIds = this.getTraceIds(properties?.context);
+    delete properties?.context;
 
     this.loggerInstance.error(message || '', {
       projectName: this.projectName,
@@ -96,6 +101,7 @@ class Logger implements ILogger {
 
   info(message: string, properties?: Props): void {
     const traceIds = this.getTraceIds(properties?.context);
+    delete properties?.context;
 
     this.loggerInstance.info(message, {
       projectName: this.projectName,
@@ -107,6 +113,7 @@ class Logger implements ILogger {
 
   log(message: string, properties?: Props): void {
     const traceIds = this.getTraceIds(properties?.context);
+    delete properties?.context;
 
     this.loggerInstance.log(LOG_LEVELS.INFO, message, {
       projectName: this.projectName,
@@ -118,6 +125,7 @@ class Logger implements ILogger {
 
   warn(message: string, properties?: Props): void {
     const traceIds = this.getTraceIds(properties?.context);
+    delete properties?.context;
 
     this.loggerInstance.log(LOG_LEVELS.WARNING, message, {
       projectName: this.projectName,
@@ -129,6 +137,7 @@ class Logger implements ILogger {
 
   event(name: string, message?: string, properties?: Props): void {
     const traceIds = this.getTraceIds(properties?.context);
+    delete properties?.context;
 
     this.loggerInstance.log(LOG_LEVELS.EVENT, message || '', {
       projectName: this.projectName,
@@ -141,6 +150,7 @@ class Logger implements ILogger {
 
   dependency(context: Context, name: string, data?: string, properties?: Props): void {
     const traceIds = this.getTraceIds(context);
+    delete properties?.context;
 
     this.loggerInstance.log(LOG_LEVELS.DEPENDENCY, name || 'Dependency', {
       projectName: this.projectName,
