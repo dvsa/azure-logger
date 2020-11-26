@@ -48,6 +48,7 @@ jest.mock('applicationinsights', () => ({
     trackEvent: jest.fn(),
     trackRequest: jest.fn(),
     trackDependency: jest.fn(),
+    flush: jest.fn(),
   },
   DistributedTracingModes: {
     AI_AND_W3C: 1,
@@ -116,6 +117,7 @@ describe('ApplicationInsightsTransport', () => {
       applicationinsightsTransport.log(mockLogInfo, () => { });
       // Assert
       expect(applicationinsightsTransport.client.trackTrace).toHaveBeenLastCalledWith(expectedTraceInput);
+      expect(applicationinsightsTransport.client.flush).toHaveBeenCalled();
     });
 
     test('should create a trace log when provided with a critical log', () => {
@@ -146,6 +148,7 @@ describe('ApplicationInsightsTransport', () => {
       applicationinsightsTransport.log(mockLogInfo, () => { });
       // Assert
       expect(applicationinsightsTransport.client.trackTrace).toHaveBeenLastCalledWith(expectedTraceInput);
+      expect(applicationinsightsTransport.client.flush).toHaveBeenCalled();
     });
 
     test('should create a trace log when provided with a debug log', () => {
@@ -176,6 +179,7 @@ describe('ApplicationInsightsTransport', () => {
       applicationinsightsTransport.log(mockLogInfo, () => { });
       // Assert
       expect(applicationinsightsTransport.client.trackTrace).toHaveBeenLastCalledWith(expectedTraceInput);
+      expect(applicationinsightsTransport.client.flush).toHaveBeenCalled();
     });
 
     test('should create a exception log with a message when provided with a error log with a message', () => {
@@ -208,6 +212,7 @@ describe('ApplicationInsightsTransport', () => {
       applicationinsightsTransport.log(mockLogInfo, () => { });
       // Assert
       expect(applicationinsightsTransport.client.trackException).toHaveBeenLastCalledWith(expectedErrorInput);
+      expect(applicationinsightsTransport.client.flush).toHaveBeenCalled();
     });
 
     test('should create a exception log with no message when provided with a error log with no messgae', () => {
@@ -239,6 +244,7 @@ describe('ApplicationInsightsTransport', () => {
       applicationinsightsTransport.log(mockLogInfo, () => { });
       // Assert
       expect(applicationinsightsTransport.client.trackException).toHaveBeenLastCalledWith(expectedErrorInput);
+      expect(applicationinsightsTransport.client.flush).toHaveBeenCalled();
     });
 
     test('should create a event log with a message when provided with a event log with a message', () => {
@@ -269,6 +275,7 @@ describe('ApplicationInsightsTransport', () => {
       applicationinsightsTransport.log(mockLogInfo, () => { });
       // Assert
       expect(applicationinsightsTransport.client.trackEvent).toHaveBeenLastCalledWith(expectedEventInput);
+      expect(applicationinsightsTransport.client.flush).toHaveBeenCalled();
     });
 
     test('should create a event log without a message when provided with a event log with no message', () => {
@@ -296,6 +303,7 @@ describe('ApplicationInsightsTransport', () => {
       applicationinsightsTransport.log(mockLogInfo, () => { });
       // Assert
       expect(applicationinsightsTransport.client.trackEvent).toHaveBeenLastCalledWith(expectedEventInput);
+      expect(applicationinsightsTransport.client.flush).toHaveBeenCalled();
     });
 
     test('should create a trace log when provided with a info log', () => {
@@ -326,6 +334,7 @@ describe('ApplicationInsightsTransport', () => {
       applicationinsightsTransport.log(mockLogInfo, () => { });
       // Assert
       expect(applicationinsightsTransport.client.trackTrace).toHaveBeenLastCalledWith(expectedTraceInput);
+      expect(applicationinsightsTransport.client.flush).toHaveBeenCalled();
     });
 
     test('should create a trace log when provided with a security log', () => {
@@ -356,6 +365,7 @@ describe('ApplicationInsightsTransport', () => {
       applicationinsightsTransport.log(mockLogInfo, () => { });
       // Assert
       expect(applicationinsightsTransport.client.trackTrace).toHaveBeenLastCalledWith(expectedTraceInput);
+      expect(applicationinsightsTransport.client.flush).toHaveBeenCalled();
     });
 
     test('should create a trace log when provided with a warning log', () => {
@@ -386,6 +396,7 @@ describe('ApplicationInsightsTransport', () => {
       applicationinsightsTransport.log(mockLogInfo, () => { });
       // Assert
       expect(applicationinsightsTransport.client.trackTrace).toHaveBeenLastCalledWith(expectedTraceInput);
+      expect(applicationinsightsTransport.client.flush).toHaveBeenCalled();
     });
 
     test('should create a dependency when provided with a dependency log', () => {
@@ -419,6 +430,7 @@ describe('ApplicationInsightsTransport', () => {
       // Assert
       expect(applicationinsightsTransport.client.trackDependency)
         .toHaveBeenLastCalledWith(expect.objectContaining(expectedDependencyInput));
+      expect(applicationinsightsTransport.client.flush).toHaveBeenCalled();
     });
 
     test('should create a request when provided with a request log', () => {
@@ -450,6 +462,7 @@ describe('ApplicationInsightsTransport', () => {
       // Assert
       expect(applicationinsightsTransport.client.trackRequest)
         .toHaveBeenLastCalledWith(expect.objectContaining(expectedRequestInput));
+      expect(applicationinsightsTransport.client.flush).toHaveBeenCalled();
     });
   });
 });
