@@ -269,7 +269,6 @@ describe('ApplicationInsightsTransport', () => {
       applicationinsightsTransport.log(mockLogInfo, () => { });
       // Assert
       expect(applicationinsightsTransport.client.trackEvent).toHaveBeenLastCalledWith(expectedEventInput);
-      expect(applicationinsightsTransport.client.).toHaveBeenCalled();
     });
 
     test('should create a event log without a message when provided with a event log with no message', () => {
