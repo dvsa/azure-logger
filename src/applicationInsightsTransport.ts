@@ -84,7 +84,6 @@ class ApplicationInsightsTransport extends Transport {
         this.createTrace(info as TraceInfo);
         break;
     }
-    this.client.flush();
     callback();
   }
 
