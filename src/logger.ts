@@ -18,13 +18,13 @@ class Logger implements ILogger {
       [LOG_LEVELS.CRITICAL]: 0,
       [LOG_LEVELS.ERROR]: 1,
       [LOG_LEVELS.WARNING]: 2,
-      [LOG_LEVELS.INFO]: 3,
-      [LOG_LEVELS.DEBUG]: 4,
-      [LOG_LEVELS.SECURITY]: 5,
-      [LOG_LEVELS.AUDIT]: 6,
-      [LOG_LEVELS.REQUEST]: 7,
-      [LOG_LEVELS.DEPENDENCY]: 8,
-      [LOG_LEVELS.EVENT]: 9,
+      [LOG_LEVELS.EVENT]: 3,
+      [LOG_LEVELS.REQUEST]: 4,
+      [LOG_LEVELS.DEPENDENCY]: 5,
+      [LOG_LEVELS.SECURITY]: 6,
+      [LOG_LEVELS.AUDIT]: 7,
+      [LOG_LEVELS.INFO]: 8,
+      [LOG_LEVELS.DEBUG]: 9,
     };
 
     this.loggerInstance = winston.createLogger({
