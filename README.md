@@ -5,13 +5,14 @@ Winston Logger with a custom Azure Application Insights Transport
 ### Logging levels
 * critical
 * error
-* warn
-* info
-* debug
+* warning
+* event
+* request
+* dependency
 * security
 * audit
-* log
-* event
+* info
+* debug
 
 ## Installation
 
