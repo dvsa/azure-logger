@@ -33,7 +33,7 @@
   "dependencies": {
     "applicationinsights": "1.8.7",
     "dotenv": "8.2.0",
-    "winston": "3.1.0",
+    "winston": "3.3.3",
     "winston-transport": "4.4.0"
   },
   "jest": {
