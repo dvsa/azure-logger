@@ -66,3 +66,11 @@ export interface RequestInfo {
   operationId: string;
   [key: string]: any;
 }
+
+export type CustomAxiosError = {
+  isAxiosError?: boolean;
+  response?: {
+    data?: any;
+    status?: number;
+  };
+};
