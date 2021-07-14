@@ -1,11 +1,11 @@
 {
   "name": "@dvsa/azure-logger",
-  "version": "4.0.0",
+  "version": "4.0.3",
   "description": "Shareable Logging Facade, implemented with Winston",
   "main": "dist/index.js",
   "scripts": {
     "postinstall": "npm run build",
-    "publish": "npm run build && npm run test && npm publish --access public",
+    "deploy:publish": "npm run build && npm run test && npm publish --access public",
     "test": "jest",
     "test:watch": "jest --watch",
     "clean": "rimraf dist",

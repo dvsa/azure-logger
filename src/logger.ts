@@ -8,6 +8,7 @@ import ApplicationInsightsTransport from './applicationInsightsTransport';
 import { LOG_LEVELS } from './enums';
 import getOperationId from './helpers/getOperationId';
 import { getServiceBusParentId, getServiceBusOperationId } from './helpers/serviceBusHelper';
+import { CustomAxiosError } from './interfaces';
 
 class Logger implements ILogger {
   private loggerInstance: WinstonLogger;
@@ -90,10 +91,19 @@ class Logger implements ILogger {
     const traceIds = this.getTraceIds(properties?.context);
     delete properties?.context;
 
+    let response;
+    let httpStatus;
+    if ((error as CustomAxiosError).isAxiosError !== undefined) {
+      response = (error as CustomAxiosError).response?.data;
+      httpStatus = (error as CustomAxiosError).response?.status;
+    }
+
     this.loggerInstance.error(message || '', {
       projectName: this.projectName,
       componentName: this.componentName,
       error,
+      response,
+      httpStatus,
       ...properties,
       ...traceIds,
     });
