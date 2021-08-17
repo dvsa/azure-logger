@@ -1,3 +1,9 @@
+import dotenv from 'dotenv';
+
+if (!process.env.APPINSIGHTS_INSTRUMENTATIONKEY) {
+  dotenv.config();
+}
+
 export default {
 
   logs: {
