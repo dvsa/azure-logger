@@ -1,7 +1,9 @@
 import dotenv from 'dotenv';
 
+dotenv.config();
+
 if (!process.env.APPINSIGHTS_INSTRUMENTATIONKEY) {
-  dotenv.config();
+  throw new Error('Required application insights instrumentation key is missing');
 }
 
 export default {
