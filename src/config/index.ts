@@ -1,7 +1,3 @@
-import dotenv from 'dotenv';
-
-dotenv.config();
-
 if (!process.env.APPINSIGHTS_INSTRUMENTATIONKEY) {
   throw new Error('Required application insights instrumentation key is missing');
 }
