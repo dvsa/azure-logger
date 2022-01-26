@@ -200,12 +200,58 @@ class Logger implements ILogger {
     const transports: Transport[] = [];
 
     if (config.developmentMode) {
+      const colors = {
+        [LOG_LEVELS.CRITICAL]: 'red',
+        [LOG_LEVELS.ERROR]: 'red',
+        [LOG_LEVELS.WARNING]: 'yellow',
+        [LOG_LEVELS.EVENT]: 'white',
+        [LOG_LEVELS.REQUEST]: 'white',
+        [LOG_LEVELS.DEPENDENCY]: 'white',
+        [LOG_LEVELS.SECURITY]: 'white',
+        [LOG_LEVELS.AUDIT]: 'white',
+        [LOG_LEVELS.INFO]: 'blue',
+        [LOG_LEVELS.DEBUG]: 'cyan',
+      };
+      const colorizer = winston.format.colorize();
+      colorizer.addColors(colors);
       transports.push(
         new winston.transports.Console({
-          format: winston.format.simple(),
+          format: winston.format.combine(
+            winston.format.errors({ stack: true }),
+            winston.format.splat(),
+            winston.format.printf(({
+              level, message, ...metadata
+            }) => {
+              const colorizedLevel = colorizer.colorize(level, level);
+              let msg = `${colorizedLevel}: ${message} `;
+              if (metadata) {
+                delete metadata.projectName;
+                delete metadata.componentName;
+                msg += JSON.stringify(metadata, null, config.console.disablePrettyPrint ? undefined : 2);
+              }
+              return msg;
+            }),
+          ),
           level: config.logs.level,
         }),
       );
+
+      if (config.files.enabled) {
+        transports.push(
+          new winston.transports.File({
+            filename: 'app.log',
+            level: config.logs.level,
+            format: winston.format.printf((info) => {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const payload = { ...info } as any;
+              delete payload.message;
+              delete payload.projectName;
+              delete payload.level;
+              return `{"level": "${info.level}", "message": "${info.message}", "payload": ${JSON.stringify(payload)}}`;
+            }),
+          }),
+        );
+      }
     } else {
       if (!config.applicationInsights.key) {
         throw new Error('No Application Insights Key provided in APPINSIGHTS_INSTRUMENTATIONKEY');

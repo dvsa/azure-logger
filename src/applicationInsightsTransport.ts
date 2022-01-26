@@ -17,6 +17,7 @@ import {
   RequestInfo,
 } from './interfaces';
 import { LOG_LEVELS, APP_INSIGHTS_LOG_LEVELS } from './enums';
+import { customTelemetryProcessor } from './processor/customTelemetryProcessor';
 
 class ApplicationInsightsTransport extends Transport {
   client: TelemetryClient;
@@ -63,6 +64,7 @@ class ApplicationInsightsTransport extends Transport {
 
     this.client = defaultClient;
     this.client.context.tags[this.client.context.keys.cloudRole] = options.componentName;
+    this.client.addTelemetryProcessor(customTelemetryProcessor);
   }
 
   log(info: LogInfo, callback: Function): void {

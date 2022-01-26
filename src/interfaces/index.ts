@@ -74,3 +74,12 @@ export type CustomAxiosError = {
     status?: number;
   };
 };
+
+export type BaseData = {
+  name?: string;
+  data?: string; // url in remote dependency
+  properties: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    [key: string]: any;
+  };
+};
