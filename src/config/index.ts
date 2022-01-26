@@ -3,7 +3,6 @@ if (!process.env.APPINSIGHTS_INSTRUMENTATIONKEY) {
 }
 
 export default {
-
   logs: {
     level: process.env.LOG_LEVEL,
   },
@@ -15,4 +14,11 @@ export default {
    * Development mode
    */
   developmentMode: process.env.NODE_ENV === 'development',
+  console: {
+    disablePrettyPrint: process.env.LOG_DISABLE_PRETTY_PRINT === 'true',
+    disableMetadata: process.env.LOG_DISABLE_METADATA === 'true',
+  },
+  files: {
+    enabled: process.env.LOG_FILES_ENABLED === 'true',
+  },
 };
