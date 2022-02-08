@@ -1,6 +1,6 @@
 {
   "name": "@dvsa/azure-logger",
-  "version": "4.2.0",
+  "version": "5.0.0-test1",
   "description": "Shareable Logging Facade, implemented with Winston",
   "main": "dist/index.js",
   "scripts": {

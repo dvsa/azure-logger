@@ -158,8 +158,8 @@ class Logger implements ILogger {
     });
   }
 
-  dependency(context: Context, name: string, data?: string, properties?: Props): void {
-    const traceIds = this.getTraceIds(context);
+  dependency(name: string, data?: string, properties?: Props): void {
+    const traceIds = this.getTraceIds(properties?.context);
     delete properties?.context;
 
     this.loggerInstance.log(LOG_LEVELS.DEPENDENCY, name || 'Dependency', {
@@ -172,8 +172,9 @@ class Logger implements ILogger {
     });
   }
 
-  request(context: Context, name: string, properties?: Props): void {
-    const traceIds = this.getTraceIds(context);
+  request(name: string, properties?: Props): void {
+    const traceIds = this.getTraceIds(properties?.context);
+    delete properties?.context;
 
     this.loggerInstance.log(LOG_LEVELS.REQUEST, name || 'Request', {
       projectName: this.projectName,
