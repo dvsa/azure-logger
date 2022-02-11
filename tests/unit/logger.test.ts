@@ -326,7 +326,7 @@ describe('Logger', () => {
 
     test('should create a dependency log', () => {
       // act
-      loggerInstance.dependency(mockContext, mockDependencyName);
+      loggerInstance.dependency(mockDependencyName, 'data', { context: mockContext });
       // assert
       expect(mockLogger.log).toHaveBeenCalledWith(
         LOG_LEVELS.DEPENDENCY,
@@ -341,7 +341,7 @@ describe('Logger', () => {
 
     test('should create a request log', () => {
       // act
-      loggerInstance.request(mockContext, mockRequestName);
+      loggerInstance.request(mockRequestName, { context: mockContext });
       // assert
       expect(mockLogger.log).toHaveBeenCalledWith(
         LOG_LEVELS.REQUEST,
