@@ -3,6 +3,7 @@ import {
   defaultClient,
   TelemetryClient,
   DistributedTracingModes,
+  Contracts,
 } from 'applicationinsights';
 import { SeverityLevel, EventTelemetry, ExceptionTelemetry } from 'applicationinsights/out/Declarations/Contracts';
 import Transport from 'winston-transport';
@@ -63,6 +64,18 @@ class ApplicationInsightsTransport extends Transport {
 
     this.client = defaultClient;
     this.client.context.tags[this.client.context.keys.cloudRole] = options.componentName;
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    this.client.addTelemetryProcessor(this.addSessionId);
+  }
+
+  addSessionId(envelope: Contracts.Envelope): boolean {
+    //@ts-ignore
+    if (envelope.data.baseData) {
+      //@ts-ignore
+      const data = envelope.data.baseData;
+      data.properties.sessionId = 'testing123'; // session id here - how?
+    }
+    return true;
   }
 
   log(info: LogInfo, callback: Function): void {
