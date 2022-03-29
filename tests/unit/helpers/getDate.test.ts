@@ -10,5 +10,5 @@ describe('getDate', () => {
     const result = getDateFilename();
 
     expect(result).toBe('2022-03-28');
-  })
-})
+  });
+});
