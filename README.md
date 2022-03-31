@@ -32,6 +32,16 @@ LOG_LEVEL=event
 NODE_ENV=development
 
 APPINSIGHTS_INSTRUMENTATIONKEY={APP_INSIGHTS_KEY}
+
+### Optional vars
+# Enable storing logs to ./logs/[date].log
+LOG_FILES_ENABLED=true 
+
+# Disable json pretty print of metadata in console logs
+LOG_DISABLE_PRETTY_PRINT=false
+
+# Disable printing metadata in console logs
+LOG_DISABLE_METADATA=true
 ```
 ## Example Use:
 
