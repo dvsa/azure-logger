@@ -1,6 +1,6 @@
 {
   "name": "@dvsa/azure-logger",
-  "version": "5.1.0",
+  "version": "5.2.0-test5",
   "description": "Shareable Logging Facade, implemented with Winston",
   "main": "dist/index.js",
   "scripts": {
@@ -26,14 +26,12 @@
     "@types/uuid": "8.3.0",
     "babel-jest": "25.5.1",
     "eslint": "6.8.0",
-    "jest": "27.5.1",
-    "mockdate": "^3.0.5",
+    "jest": "28.0.3",
     "rimraf": "3.0.2",
     "typescript": "3.9.7"
   },
   "dependencies": {
-    "applicationinsights": "2.2.2",
-    "safe-stable-stringify": "2.3.1",
+    "applicationinsights": "2.2.0",
     "winston": "3.6.0",
     "winston-transport": "4.5.0"
   },
