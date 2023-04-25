@@ -5,7 +5,7 @@ describe('Service Bus Helper', () => {
     test('get operation id from service bus properties', () => {
       const mockContext = {
         bindingData: {
-          userProperties: {
+          applicationProperties: {
             operationId: 'testOpId',
           },
         },
@@ -41,7 +41,7 @@ describe('Service Bus Helper', () => {
     test('no operationId returns undefined', () => {
       const mockContext = {
         bindingData: {
-          userProperties: {
+          applicationProperties: {
             operationId: null,
           },
         },
@@ -57,7 +57,7 @@ describe('Service Bus Helper', () => {
     test('get parent id from service bus properties', () => {
       const mockContext = {
         bindingData: {
-          userProperties: {
+          applicationProperties: {
             parentId: 'testParentId',
           },
         },
@@ -93,7 +93,7 @@ describe('Service Bus Helper', () => {
     test('no parentId returns undefined', () => {
       const mockContext = {
         bindingData: {
-          userProperties: {
+          applicationProperties: {
             parentId: null,
           },
         },

@@ -208,12 +208,12 @@ class Logger implements ILogger {
         }),
       );
     } else {
-      if (!config.applicationInsights.key) {
-        throw new Error('No Application Insights Key provided in APPINSIGHTS_INSTRUMENTATIONKEY');
+      if (!config.applicationInsights.connectionString) {
+        throw new Error('No Application Insights Connection String provided in APPLICATIONINSIGHTS_CONNECTION_STRING');
       }
       transports.push(
         new ApplicationInsightsTransport({
-          key: config.applicationInsights.key,
+          connectionString: config.applicationInsights.connectionString,
           componentName: this.componentName,
           level: config.logs.level,
         }),

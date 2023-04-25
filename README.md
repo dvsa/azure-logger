@@ -31,7 +31,7 @@ LOG_LEVEL=event
 
 NODE_ENV=development
 
-APPINSIGHTS_INSTRUMENTATIONKEY={APP_INSIGHTS_KEY}
+APPLICATIONINSIGHTS_CONNECTION_STRING={APPLICATION_INSIGHTS_CONNECTION_STRING}
 ```
 ## Example Use:
 
@@ -72,8 +72,8 @@ function getData(): void {
 }
 ```
 
-## APPINSIGHTS_INSTRUMENTATIONKEY
+## APPLICATIONINSIGHTS_CONNECTION_STRING
 
-When using an Azure function app the following environment variable must be present and contain the key for the application insights instance you wish to use.
+When using an Azure function app the following environment variable must be present and contain the connection string for the application insights instance you wish to use.
   
-APPINSIGHTS_INSTRUMENTATIONKEY
+APPLICATIONINSIGHTS_CONNECTION_STRING

@@ -49,7 +49,7 @@ class ApplicationInsightsTransport extends Transport {
 
   constructor(options: ApplicationInsightsTransportOptions) {
     super();
-    setup(options.key)
+    setup(options.connectionString)
       .setAutoDependencyCorrelation(true)
       .setAutoCollectRequests(true)
       .setAutoCollectPerformance(true, true)
