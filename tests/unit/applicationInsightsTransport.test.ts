@@ -58,21 +58,21 @@ describe('ApplicationInsightsTransport', () => {
   describe('constructor', () => {
     test('should create a new app insights client', () => {
       // Arrange
-      const key = 'dummy-key';
+      const connectionString = 'dummy-string';
       const componentName = 'azure-logger';
       // Act
       const result = new ApplicationInsightsTransport({
-        key, componentName,
+        connectionString, componentName,
       });
 
       // Assert
-      expect(setup).toHaveBeenCalledWith(key);
+      expect(setup).toHaveBeenCalledWith(connectionString);
       expect(result.client.context.tags.cloudRole).toEqual(componentName);
     });
   });
 
   describe('log', () => {
-    const key = 'dummy-key';
+    const connectionString = 'dummy-string';
     const projectName = 'DVSA';
     const componentName = 'azure-logger';
     const message = 'mock-message';
@@ -83,7 +83,7 @@ describe('ApplicationInsightsTransport', () => {
 
     beforeEach(() => {
       applicationinsightsTransport = new ApplicationInsightsTransport({
-        key,
+        connectionString,
         componentName,
       });
     });

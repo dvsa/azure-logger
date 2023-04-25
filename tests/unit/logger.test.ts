@@ -10,7 +10,7 @@ jest.mock('../../src/config', () => ({
     level: 'DEBUG',
   },
   applicationInsights: {
-    key: '123-456-789',
+    connectionString: '123-456-789',
   },
 }));
 
@@ -56,7 +56,7 @@ describe('Logger', () => {
       // assert
       expect(ApplicationInsightsTransport).toHaveBeenCalledWith({
         level: 'DEBUG',
-        key: '123-456-789',
+        connectionString: '123-456-789',
         componentName: 'azure-logger',
       });
     });

@@ -1,5 +1,5 @@
-if (!process.env.APPINSIGHTS_INSTRUMENTATIONKEY) {
-  throw new Error('Required application insights instrumentation key is missing');
+if (!process.env.APPLICATIONINSIGHTS_CONNECTION_STRING) {
+  throw new Error('Required application insights connection string is missing');
 }
 
 export default {
@@ -8,7 +8,7 @@ export default {
     level: process.env.LOG_LEVEL,
   },
   applicationInsights: {
-    key: process.env.APPINSIGHTS_INSTRUMENTATIONKEY,
+    connectionString: process.env.APPLICATIONINSIGHTS_CONNECTION_STRING,
   },
 
   /**
