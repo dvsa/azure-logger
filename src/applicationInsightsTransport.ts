@@ -63,6 +63,10 @@ class ApplicationInsightsTransport extends Transport {
 
     this.client = defaultClient;
     this.client.context.tags[this.client.context.keys.cloudRole] = options.componentName;
+    this.client.context.tags['sessionId'] = '';
+    this.client.context.tags['X-Azure-Ref'] = '';
+    this.client.context.tags['INCAP-REQ-ID'] = '';
+    this.client.context.tags['Incap-Ses'] = '';
   }
 
   log(info: LogInfo, callback: Function): void {
