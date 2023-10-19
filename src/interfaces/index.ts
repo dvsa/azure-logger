@@ -7,7 +7,7 @@ export interface ApplicationInsightsTransportOptions extends Transport.Transport
   componentName: string;
 }
 
-export type LogInfo = ExceptionInfo | EventInfo | TraceInfo | RequestInfo | DependencyInfo;
+export type LogInfo = ExceptionInfo | EventInfo | TraceInfo | RequestInfo | DependencyInfo | PageViewInfo;
 
 export interface ExceptionInfo {
   error: Error;
@@ -64,6 +64,17 @@ export interface RequestInfo {
   success: boolean;
   componentName: string;
   operationId: string;
+  [key: string]: any;
+}
+
+export interface PageViewInfo {
+  name: string;
+  level: LOG_LEVELS;
+  projectName: string;
+  componentName: string;
+  message: string;
+  operationId: string;
+  meta: any;
   [key: string]: any;
 }
 

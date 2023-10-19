@@ -15,6 +15,7 @@ import {
   ExceptionInfo,
   DependencyInfo,
   RequestInfo,
+  PageViewInfo,
 } from './interfaces';
 import { LOG_LEVELS, APP_INSIGHTS_LOG_LEVELS } from './enums';
 
@@ -32,6 +33,7 @@ class ApplicationInsightsTransport extends Transport {
     [LOG_LEVELS.WARNING]: APP_INSIGHTS_LOG_LEVELS.TRACE,
     [LOG_LEVELS.DEPENDENCY]: APP_INSIGHTS_LOG_LEVELS.DEPENDENCY,
     [LOG_LEVELS.REQUEST]: APP_INSIGHTS_LOG_LEVELS.REQUEST,
+    [LOG_LEVELS.PAGE_VIEW]: APP_INSIGHTS_LOG_LEVELS.PAGE_VIEW,
   };
 
   severityLevelMap = {
@@ -45,6 +47,7 @@ class ApplicationInsightsTransport extends Transport {
     [LOG_LEVELS.WARNING]: SeverityLevel.Warning,
     [LOG_LEVELS.DEPENDENCY]: SeverityLevel.Information,
     [LOG_LEVELS.REQUEST]: SeverityLevel.Information,
+    [LOG_LEVELS.PAGE_VIEW]: SeverityLevel.Information,
   };
 
   constructor(options: ApplicationInsightsTransportOptions) {
@@ -63,10 +66,12 @@ class ApplicationInsightsTransport extends Transport {
 
     this.client = defaultClient;
     this.client.context.tags[this.client.context.keys.cloudRole] = options.componentName;
-    this.client.context.tags['sessionId'] = '';
+    this.client.context.tags.sessionId = '';
     this.client.context.tags['X-Azure-Ref'] = '';
     this.client.context.tags['INCAP-REQ-ID'] = '';
     this.client.context.tags['Incap-Ses'] = '';
+    this.client.context.tags.userId = '';
+    this.client.context.tags.userAuthUserId = '';
   }
 
   log(info: LogInfo, callback: Function): void {
@@ -82,6 +87,9 @@ class ApplicationInsightsTransport extends Transport {
         break;
       case APP_INSIGHTS_LOG_LEVELS.REQUEST:
         this.createRequest(info as RequestInfo);
+        break;
+      case APP_INSIGHTS_LOG_LEVELS.PAGE_VIEW:
+        this.createPageView(info as PageViewInfo);
         break;
       case APP_INSIGHTS_LOG_LEVELS.TRACE:
       default:
@@ -104,6 +112,9 @@ class ApplicationInsightsTransport extends Transport {
       message: info.message,
       tagOverrides: {
         [this.client.context.keys.operationId]: info.sbOperationId || info.operationId,
+        [this.client.context.keys.sessionId]: info.sessionId,
+        [this.client.context.keys.userId]: info.userId,
+        [this.client.context.keys.userAuthUserId]: info.userAuthUserId,
       },
       properties: {
         ...otherProperties,
@@ -126,6 +137,9 @@ class ApplicationInsightsTransport extends Transport {
       exception: error,
       tagOverrides: {
         [this.client.context.keys.operationId]: info.sbOperationId || info.operationId,
+        [this.client.context.keys.sessionId]: info.sessionId,
+        [this.client.context.keys.userId]: info.userId,
+        [this.client.context.keys.userAuthUserId]: info.userAuthUserId,
       },
       properties: {
         ...otherProperties,
@@ -153,6 +167,9 @@ class ApplicationInsightsTransport extends Transport {
       name,
       tagOverrides: {
         [this.client.context.keys.operationId]: info.sbOperationId || info.operationId,
+        [this.client.context.keys.sessionId]: info.sessionId,
+        [this.client.context.keys.userId]: info.userId,
+        [this.client.context.keys.userAuthUserId]: info.userAuthUserId,
       },
       properties: {
         ...otherProperties,
@@ -171,6 +188,9 @@ class ApplicationInsightsTransport extends Transport {
       ...info,
       tagOverrides: {
         [this.client.context.keys.operationId]: info.sbOperationId || info.operationId,
+        [this.client.context.keys.sessionId]: info.sessionId,
+        [this.client.context.keys.userId]: info.userId,
+        [this.client.context.keys.userAuthUserId]: info.userAuthUserId,
       },
     };
 
@@ -182,10 +202,27 @@ class ApplicationInsightsTransport extends Transport {
       ...info,
       tagOverrides: {
         [this.client.context.keys.operationId]: info.sbOperationId || info.operationId,
+        [this.client.context.keys.sessionId]: info.sessionId,
+        [this.client.context.keys.userId]: info.userId,
+        [this.client.context.keys.userAuthUserId]: info.userAuthUserId,
       },
     };
 
     this.client.trackRequest(request);
+  }
+
+  private createPageView(info: PageViewInfo): void {
+    const pageView = {
+      ...info,
+      tagOverrides: {
+        [this.client.context.keys.operationId]: info.sbOperationId || info.operationId,
+        [this.client.context.keys.sessionId]: info.sessionId,
+        [this.client.context.keys.userId]: info.userId,
+        [this.client.context.keys.userAuthUserId]: info.userAuthUserId,
+      },
+    };
+
+    this.client.trackPageView(pageView);
   }
 }
 
