@@ -4,7 +4,11 @@ import {
   TelemetryClient,
   DistributedTracingModes,
 } from 'applicationinsights';
-import { SeverityLevel, EventTelemetry, ExceptionTelemetry } from 'applicationinsights/out/Declarations/Contracts';
+import {
+  SeverityLevel,
+  EventTelemetry,
+  ExceptionTelemetry,
+} from 'applicationinsights/out/Declarations/Contracts';
 import Transport from 'winston-transport';
 
 import {
@@ -65,13 +69,11 @@ class ApplicationInsightsTransport extends Transport {
       .start();
 
     this.client = defaultClient;
-    this.client.context.tags[this.client.context.keys.cloudRole] = options.componentName;
-    this.client.context.tags.sessionId = '';
+    this.client.context.tags[this.client.context.keys.cloudRole] =
+      options.componentName;
     this.client.context.tags['X-Azure-Ref'] = '';
     this.client.context.tags['INCAP-REQ-ID'] = '';
     this.client.context.tags['Incap-Ses'] = '';
-    this.client.context.tags.userId = '';
-    this.client.context.tags.userAuthUserId = '';
   }
 
   log(info: LogInfo, callback: Function): void {
@@ -100,18 +102,14 @@ class ApplicationInsightsTransport extends Transport {
   }
 
   private createTrace(info: TraceInfo): void {
-    const {
-      message,
-      meta,
-      operationId,
-      ...otherProperties
-    } = info;
+    const { message, meta, operationId, ...otherProperties } = info;
 
     this.client.trackTrace({
       severity: this.severityLevelMap[info.level],
       message: info.message,
       tagOverrides: {
-        [this.client.context.keys.operationId]: info.sbOperationId || info.operationId,
+        [this.client.context.keys.operationId]:
+          info.sbOperationId || info.operationId,
         [this.client.context.keys.sessionId]: info.sessionId,
         [this.client.context.keys.userId]: info.userId,
         [this.client.context.keys.userAuthUserId]: info.userAuthUserId,
@@ -123,20 +121,15 @@ class ApplicationInsightsTransport extends Transport {
   }
 
   private createException(info: ExceptionInfo): void {
-    const {
-      error,
-      message,
-      level,
-      meta,
-      operationId,
-      ...otherProperties
-    } = info;
+    const { error, message, level, meta, operationId, ...otherProperties } =
+      info;
 
     const exception: ExceptionTelemetry = {
       severity: SeverityLevel.Error,
       exception: error,
       tagOverrides: {
-        [this.client.context.keys.operationId]: info.sbOperationId || info.operationId,
+        [this.client.context.keys.operationId]:
+          info.sbOperationId || info.operationId,
         [this.client.context.keys.sessionId]: info.sessionId,
         [this.client.context.keys.userId]: info.userId,
         [this.client.context.keys.userAuthUserId]: info.userAuthUserId,
@@ -154,19 +147,14 @@ class ApplicationInsightsTransport extends Transport {
   }
 
   private createEvent(info: EventInfo): void {
-    const {
-      name,
-      message,
-      meta,
-      level,
-      operationId,
-      ...otherProperties
-    } = info;
+    const { name, message, meta, level, operationId, ...otherProperties } =
+      info;
 
     const event: EventTelemetry = {
       name,
       tagOverrides: {
-        [this.client.context.keys.operationId]: info.sbOperationId || info.operationId,
+        [this.client.context.keys.operationId]:
+          info.sbOperationId || info.operationId,
         [this.client.context.keys.sessionId]: info.sessionId,
         [this.client.context.keys.userId]: info.userId,
         [this.client.context.keys.userAuthUserId]: info.userAuthUserId,
@@ -187,7 +175,8 @@ class ApplicationInsightsTransport extends Transport {
     const dependency = {
       ...info,
       tagOverrides: {
-        [this.client.context.keys.operationId]: info.sbOperationId || info.operationId,
+        [this.client.context.keys.operationId]:
+          info.sbOperationId || info.operationId,
         [this.client.context.keys.sessionId]: info.sessionId,
         [this.client.context.keys.userId]: info.userId,
         [this.client.context.keys.userAuthUserId]: info.userAuthUserId,
@@ -201,7 +190,8 @@ class ApplicationInsightsTransport extends Transport {
     const request = {
       ...info,
       tagOverrides: {
-        [this.client.context.keys.operationId]: info.sbOperationId || info.operationId,
+        [this.client.context.keys.operationId]:
+          info.sbOperationId || info.operationId,
         [this.client.context.keys.sessionId]: info.sessionId,
         [this.client.context.keys.userId]: info.userId,
         [this.client.context.keys.userAuthUserId]: info.userAuthUserId,
@@ -215,7 +205,8 @@ class ApplicationInsightsTransport extends Transport {
     const pageView = {
       ...info,
       tagOverrides: {
-        [this.client.context.keys.operationId]: info.sbOperationId || info.operationId,
+        [this.client.context.keys.operationId]:
+          info.sbOperationId || info.operationId,
         [this.client.context.keys.sessionId]: info.sessionId,
         [this.client.context.keys.userId]: info.userId,
         [this.client.context.keys.userAuthUserId]: info.userAuthUserId,
