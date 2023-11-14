@@ -69,8 +69,7 @@ class ApplicationInsightsTransport extends Transport {
       .start();
 
     this.client = defaultClient;
-    this.client.context.tags[this.client.context.keys.cloudRole] =
-      options.componentName;
+    this.client.context.tags[this.client.context.keys.cloudRole] = options.componentName;
     this.client.context.tags['X-Azure-Ref'] = '';
     this.client.context.tags['INCAP-REQ-ID'] = '';
     this.client.context.tags['Incap-Ses'] = '';
@@ -102,7 +101,9 @@ class ApplicationInsightsTransport extends Transport {
   }
 
   private createTrace(info: TraceInfo): void {
-    const { message, meta, operationId, ...otherProperties } = info;
+    const {
+      message, meta, operationId, ...otherProperties
+    } = info;
 
     this.client.trackTrace({
       severity: this.severityLevelMap[info.level],
@@ -113,6 +114,7 @@ class ApplicationInsightsTransport extends Transport {
         [this.client.context.keys.sessionId]: info.sessionId,
         [this.client.context.keys.userId]: info.userId,
         [this.client.context.keys.userAuthUserId]: info.userAuthUserId,
+        [this.client.context.keys.userAccountId]: info.userAccountId,
       },
       properties: {
         ...otherProperties,
@@ -121,8 +123,9 @@ class ApplicationInsightsTransport extends Transport {
   }
 
   private createException(info: ExceptionInfo): void {
-    const { error, message, level, meta, operationId, ...otherProperties } =
-      info;
+    const {
+      error, message, level, meta, operationId, ...otherProperties
+    } = info;
 
     const exception: ExceptionTelemetry = {
       severity: SeverityLevel.Error,
@@ -133,6 +136,7 @@ class ApplicationInsightsTransport extends Transport {
         [this.client.context.keys.sessionId]: info.sessionId,
         [this.client.context.keys.userId]: info.userId,
         [this.client.context.keys.userAuthUserId]: info.userAuthUserId,
+        [this.client.context.keys.userAccountId]: info.userAccountId,
       },
       properties: {
         ...otherProperties,
@@ -147,8 +151,9 @@ class ApplicationInsightsTransport extends Transport {
   }
 
   private createEvent(info: EventInfo): void {
-    const { name, message, meta, level, operationId, ...otherProperties } =
-      info;
+    const {
+      name, message, meta, level, operationId, ...otherProperties
+    } = info;
 
     const event: EventTelemetry = {
       name,
@@ -158,6 +163,7 @@ class ApplicationInsightsTransport extends Transport {
         [this.client.context.keys.sessionId]: info.sessionId,
         [this.client.context.keys.userId]: info.userId,
         [this.client.context.keys.userAuthUserId]: info.userAuthUserId,
+        [this.client.context.keys.userAccountId]: info.userAccountId,
       },
       properties: {
         ...otherProperties,
@@ -180,6 +186,7 @@ class ApplicationInsightsTransport extends Transport {
         [this.client.context.keys.sessionId]: info.sessionId,
         [this.client.context.keys.userId]: info.userId,
         [this.client.context.keys.userAuthUserId]: info.userAuthUserId,
+        [this.client.context.keys.userAccountId]: info.userAccountId,
       },
     };
 
@@ -195,6 +202,7 @@ class ApplicationInsightsTransport extends Transport {
         [this.client.context.keys.sessionId]: info.sessionId,
         [this.client.context.keys.userId]: info.userId,
         [this.client.context.keys.userAuthUserId]: info.userAuthUserId,
+        [this.client.context.keys.userAccountId]: info.userAccountId,
       },
     };
 
@@ -210,6 +218,7 @@ class ApplicationInsightsTransport extends Transport {
         [this.client.context.keys.sessionId]: info.sessionId,
         [this.client.context.keys.userId]: info.userId,
         [this.client.context.keys.userAuthUserId]: info.userAuthUserId,
+        [this.client.context.keys.userAccountId]: info.userAccountId,
       },
     };
 
