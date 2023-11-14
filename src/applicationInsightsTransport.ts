@@ -4,7 +4,11 @@ import {
   TelemetryClient,
   DistributedTracingModes,
 } from 'applicationinsights';
-import { SeverityLevel, EventTelemetry, ExceptionTelemetry } from 'applicationinsights/out/Declarations/Contracts';
+import {
+  SeverityLevel,
+  EventTelemetry,
+  ExceptionTelemetry,
+} from 'applicationinsights/out/Declarations/Contracts';
 import Transport from 'winston-transport';
 
 import {
@@ -15,6 +19,7 @@ import {
   ExceptionInfo,
   DependencyInfo,
   RequestInfo,
+  PageViewInfo,
 } from './interfaces';
 import { LOG_LEVELS, APP_INSIGHTS_LOG_LEVELS } from './enums';
 
@@ -32,6 +37,7 @@ class ApplicationInsightsTransport extends Transport {
     [LOG_LEVELS.WARNING]: APP_INSIGHTS_LOG_LEVELS.TRACE,
     [LOG_LEVELS.DEPENDENCY]: APP_INSIGHTS_LOG_LEVELS.DEPENDENCY,
     [LOG_LEVELS.REQUEST]: APP_INSIGHTS_LOG_LEVELS.REQUEST,
+    [LOG_LEVELS.PAGE_VIEW]: APP_INSIGHTS_LOG_LEVELS.PAGE_VIEW,
   };
 
   severityLevelMap = {
@@ -45,6 +51,7 @@ class ApplicationInsightsTransport extends Transport {
     [LOG_LEVELS.WARNING]: SeverityLevel.Warning,
     [LOG_LEVELS.DEPENDENCY]: SeverityLevel.Information,
     [LOG_LEVELS.REQUEST]: SeverityLevel.Information,
+    [LOG_LEVELS.PAGE_VIEW]: SeverityLevel.Information,
   };
 
   constructor(options: ApplicationInsightsTransportOptions) {
@@ -63,7 +70,6 @@ class ApplicationInsightsTransport extends Transport {
 
     this.client = defaultClient;
     this.client.context.tags[this.client.context.keys.cloudRole] = options.componentName;
-    this.client.context.tags['sessionId'] = '';
     this.client.context.tags['X-Azure-Ref'] = '';
     this.client.context.tags['INCAP-REQ-ID'] = '';
     this.client.context.tags['Incap-Ses'] = '';
@@ -83,6 +89,9 @@ class ApplicationInsightsTransport extends Transport {
       case APP_INSIGHTS_LOG_LEVELS.REQUEST:
         this.createRequest(info as RequestInfo);
         break;
+      case APP_INSIGHTS_LOG_LEVELS.PAGE_VIEW:
+        this.createPageView(info as PageViewInfo);
+        break;
       case APP_INSIGHTS_LOG_LEVELS.TRACE:
       default:
         this.createTrace(info as TraceInfo);
@@ -93,17 +102,19 @@ class ApplicationInsightsTransport extends Transport {
 
   private createTrace(info: TraceInfo): void {
     const {
-      message,
-      meta,
-      operationId,
-      ...otherProperties
+      message, meta, operationId, ...otherProperties
     } = info;
 
     this.client.trackTrace({
       severity: this.severityLevelMap[info.level],
       message: info.message,
       tagOverrides: {
-        [this.client.context.keys.operationId]: info.sbOperationId || info.operationId,
+        [this.client.context.keys.operationId]:
+          info.sbOperationId || info.operationId,
+        [this.client.context.keys.sessionId]: info.sessionId,
+        [this.client.context.keys.userId]: info.userId,
+        [this.client.context.keys.userAuthUserId]: info.userAuthUserId,
+        [this.client.context.keys.userAccountId]: info.userAccountId,
       },
       properties: {
         ...otherProperties,
@@ -113,19 +124,19 @@ class ApplicationInsightsTransport extends Transport {
 
   private createException(info: ExceptionInfo): void {
     const {
-      error,
-      message,
-      level,
-      meta,
-      operationId,
-      ...otherProperties
+      error, message, level, meta, operationId, ...otherProperties
     } = info;
 
     const exception: ExceptionTelemetry = {
       severity: SeverityLevel.Error,
       exception: error,
       tagOverrides: {
-        [this.client.context.keys.operationId]: info.sbOperationId || info.operationId,
+        [this.client.context.keys.operationId]:
+          info.sbOperationId || info.operationId,
+        [this.client.context.keys.sessionId]: info.sessionId,
+        [this.client.context.keys.userId]: info.userId,
+        [this.client.context.keys.userAuthUserId]: info.userAuthUserId,
+        [this.client.context.keys.userAccountId]: info.userAccountId,
       },
       properties: {
         ...otherProperties,
@@ -141,18 +152,18 @@ class ApplicationInsightsTransport extends Transport {
 
   private createEvent(info: EventInfo): void {
     const {
-      name,
-      message,
-      meta,
-      level,
-      operationId,
-      ...otherProperties
+      name, message, meta, level, operationId, ...otherProperties
     } = info;
 
     const event: EventTelemetry = {
       name,
       tagOverrides: {
-        [this.client.context.keys.operationId]: info.sbOperationId || info.operationId,
+        [this.client.context.keys.operationId]:
+          info.sbOperationId || info.operationId,
+        [this.client.context.keys.sessionId]: info.sessionId,
+        [this.client.context.keys.userId]: info.userId,
+        [this.client.context.keys.userAuthUserId]: info.userAuthUserId,
+        [this.client.context.keys.userAccountId]: info.userAccountId,
       },
       properties: {
         ...otherProperties,
@@ -170,7 +181,12 @@ class ApplicationInsightsTransport extends Transport {
     const dependency = {
       ...info,
       tagOverrides: {
-        [this.client.context.keys.operationId]: info.sbOperationId || info.operationId,
+        [this.client.context.keys.operationId]:
+          info.sbOperationId || info.operationId,
+        [this.client.context.keys.sessionId]: info.sessionId,
+        [this.client.context.keys.userId]: info.userId,
+        [this.client.context.keys.userAuthUserId]: info.userAuthUserId,
+        [this.client.context.keys.userAccountId]: info.userAccountId,
       },
     };
 
@@ -181,11 +197,32 @@ class ApplicationInsightsTransport extends Transport {
     const request = {
       ...info,
       tagOverrides: {
-        [this.client.context.keys.operationId]: info.sbOperationId || info.operationId,
+        [this.client.context.keys.operationId]:
+          info.sbOperationId || info.operationId,
+        [this.client.context.keys.sessionId]: info.sessionId,
+        [this.client.context.keys.userId]: info.userId,
+        [this.client.context.keys.userAuthUserId]: info.userAuthUserId,
+        [this.client.context.keys.userAccountId]: info.userAccountId,
       },
     };
 
     this.client.trackRequest(request);
+  }
+
+  private createPageView(info: PageViewInfo): void {
+    const pageView = {
+      ...info,
+      tagOverrides: {
+        [this.client.context.keys.operationId]:
+          info.sbOperationId || info.operationId,
+        [this.client.context.keys.sessionId]: info.sessionId,
+        [this.client.context.keys.userId]: info.userId,
+        [this.client.context.keys.userAuthUserId]: info.userAuthUserId,
+        [this.client.context.keys.userAccountId]: info.userAccountId,
+      },
+    };
+
+    this.client.trackPageView(pageView);
   }
 }
 

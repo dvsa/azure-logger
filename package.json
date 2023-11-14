@@ -1,6 +1,6 @@
 {
   "name": "@dvsa/azure-logger",
-  "version": "6.2.0",
+  "version": "6.3.0",
   "description": "Shareable Logging Facade, implemented with Winston",
   "main": "dist/index.js",
   "scripts": {
@@ -10,7 +10,8 @@
     "test:watch": "jest --watch",
     "clean": "rimraf dist",
     "build": "npm run clean && tsc",
-    "lint": "eslint --ext .js,.ts ."
+    "lint": "eslint --ext .js,.ts .",
+    "lint:fix": "eslint --fix --ext .js,.ts ."
   },
   "author": "DVSA",
   "license": "MIT",

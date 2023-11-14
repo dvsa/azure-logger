@@ -14,4 +14,5 @@ export default interface ILogger {
   event(name: string, message?: string, properties?: Props): void;
   dependency(name: string, data?: string, properties?: Props): void;
   request(name: string, properties?: Props): void;
+  pageView(name: string, properties?: Props): void;
 }

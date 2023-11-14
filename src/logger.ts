@@ -19,13 +19,14 @@ class Logger implements ILogger {
       [LOG_LEVELS.CRITICAL]: 0,
       [LOG_LEVELS.ERROR]: 1,
       [LOG_LEVELS.WARNING]: 2,
-      [LOG_LEVELS.EVENT]: 3,
-      [LOG_LEVELS.REQUEST]: 4,
-      [LOG_LEVELS.DEPENDENCY]: 5,
-      [LOG_LEVELS.SECURITY]: 6,
-      [LOG_LEVELS.AUDIT]: 7,
-      [LOG_LEVELS.INFO]: 8,
-      [LOG_LEVELS.DEBUG]: 9,
+      [LOG_LEVELS.PAGE_VIEW]: 3,
+      [LOG_LEVELS.EVENT]: 4,
+      [LOG_LEVELS.REQUEST]: 5,
+      [LOG_LEVELS.DEPENDENCY]: 6,
+      [LOG_LEVELS.SECURITY]: 7,
+      [LOG_LEVELS.AUDIT]: 8,
+      [LOG_LEVELS.INFO]: 9,
+      [LOG_LEVELS.DEBUG]: 10,
     };
 
     this.loggerInstance = winston.createLogger({
@@ -177,6 +178,19 @@ class Logger implements ILogger {
     delete properties?.context;
 
     this.loggerInstance.log(LOG_LEVELS.REQUEST, name || 'Request', {
+      projectName: this.projectName,
+      componentName: this.componentName,
+      name,
+      ...traceIds,
+      ...properties,
+    });
+  }
+
+  pageView(name: string, properties?: Props): void {
+    const traceIds = this.getTraceIds(properties?.context);
+    delete properties?.context;
+
+    this.loggerInstance.log(LOG_LEVELS.PAGE_VIEW, name || 'Page View', {
       projectName: this.projectName,
       componentName: this.componentName,
       name,
