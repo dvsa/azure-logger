@@ -26,7 +26,7 @@ class Logger implements ILogger {
       [LOG_LEVELS.SECURITY]: 7,
       [LOG_LEVELS.AUDIT]: 8,
       [LOG_LEVELS.INFO]: 9,
-      [LOG_LEVELS.DEBUG]: 10,
+      [LOG_LEVELS.DEBUG]: 99,
     };
 
     this.loggerInstance = winston.createLogger({
