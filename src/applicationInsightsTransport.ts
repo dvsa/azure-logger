@@ -22,6 +22,7 @@ import {
   PageViewInfo,
 } from './interfaces';
 import { LOG_LEVELS, APP_INSIGHTS_LOG_LEVELS } from './enums';
+import { dropAADLogsTelemetryProcessor } from './dropAADLogsTelemetryProcessor';
 
 class ApplicationInsightsTransport extends Transport {
   client: TelemetryClient;
@@ -68,6 +69,7 @@ class ApplicationInsightsTransport extends Transport {
       .setDistributedTracingMode(DistributedTracingModes.AI_AND_W3C)
       .start();
 
+    defaultClient.addTelemetryProcessor(dropAADLogsTelemetryProcessor);
     this.client = defaultClient;
     this.client.context.tags[this.client.context.keys.cloudRole] = options.componentName;
     this.client.context.tags['X-Azure-Ref'] = '';
