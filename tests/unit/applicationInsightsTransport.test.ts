@@ -48,6 +48,7 @@ jest.mock('applicationinsights', () => ({
     trackEvent: jest.fn(),
     trackRequest: jest.fn(),
     trackDependency: jest.fn(),
+    addTelemetryProcessor: jest.fn(),
   },
   DistributedTracingModes: {
     AI_AND_W3C: 1,
