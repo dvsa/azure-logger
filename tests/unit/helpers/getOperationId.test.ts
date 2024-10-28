@@ -1,28 +1,28 @@
-import { Context } from '@azure/functions';
-import Util from 'applicationinsights/out/Library/Util';
+import { InvocationContext } from '@azure/functions';
+import crypto from 'crypto';
 import getOperationId from '../../../src/helpers/getOperationId';
 
 /*
   If there isn't a traceparent passed into Traceparent, the function Util.w3cTraceId
   is used to generate a new operation id
 */
-Util.w3cTraceId = jest.fn().mockReturnValue('new-trace-id');
+crypto.randomBytes = jest.fn().mockReturnValue('new-trace-id');
 
 describe('getOperationId', () => {
   test('should return a new operation id if there is no traceContext', () => {
-    expect(getOperationId({} as Context)).toEqual('new-trace-id');
+    expect(getOperationId({} as InvocationContext)).toBe('new-trace-id');
   });
 
   test('should return a new operation id if there is no traceParent', () => {
-    expect(getOperationId({ traceContext: {} } as Context)).toEqual('new-trace-id');
+    expect(getOperationId({ traceContext: {} } as InvocationContext)).toBe('new-trace-id');
   });
 
   test('should return a trace id if a traceParent exists', () => {
     expect(getOperationId({
       traceContext:
       {
-        traceparent: '00-763230142f4317478bf6bdcee3886ef0-2839ff750bf4cc46-00',
+        traceParent: '763230142f4317478bf6bdcee3886ef0',
       },
-    } as Context)).toEqual('763230142f4317478bf6bdcee3886ef0');
+    } as InvocationContext)).toBe('763230142f4317478bf6bdcee3886ef0');
   });
 });

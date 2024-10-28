@@ -1,4 +1,4 @@
-import { Context } from '@azure/functions';
+import { InvocationContext } from '@azure/functions';
 import winston, { Logger as WinstonLogger } from 'winston';
 import Transport from 'winston-transport';
 
@@ -41,7 +41,7 @@ class Logger implements ILogger {
   }
 
   critical(message: string, properties?: Props): void {
-    const traceIds = this.getTraceIds(properties?.context);
+    const traceIds = this.getTraceIds(properties?.context as InvocationContext);
     delete properties?.context;
 
     this.loggerInstance.log(LOG_LEVELS.CRITICAL, message, {
@@ -53,7 +53,7 @@ class Logger implements ILogger {
   }
 
   debug(message: string, properties?: Props): void {
-    const traceIds = this.getTraceIds(properties?.context);
+    const traceIds = this.getTraceIds(properties?.context as InvocationContext);
     delete properties?.context;
 
     this.loggerInstance.log(LOG_LEVELS.DEBUG, message, {
@@ -65,7 +65,7 @@ class Logger implements ILogger {
   }
 
   audit(message: string, properties?: Props): void {
-    const traceIds = this.getTraceIds(properties?.context);
+    const traceIds = this.getTraceIds(properties?.context as InvocationContext);
     delete properties?.context;
 
     this.loggerInstance.log(LOG_LEVELS.AUDIT, message, {
@@ -77,7 +77,7 @@ class Logger implements ILogger {
   }
 
   security(message: string, properties?: Props): void {
-    const traceIds = this.getTraceIds(properties?.context);
+    const traceIds = this.getTraceIds(properties?.context as InvocationContext);
     delete properties?.context;
 
     this.loggerInstance.log(LOG_LEVELS.SECURITY, message, {
@@ -89,13 +89,13 @@ class Logger implements ILogger {
   }
 
   error(error: Error, message?: string, properties?: Props): void {
-    const traceIds = this.getTraceIds(properties?.context);
+    const traceIds = this.getTraceIds(properties?.context as InvocationContext);
     delete properties?.context;
 
     let response;
     let httpStatus;
     if ((error as CustomAxiosError).isAxiosError !== undefined) {
-      response = (error as CustomAxiosError).response?.data;
+      response = (error as CustomAxiosError).response?.data as string;
       httpStatus = (error as CustomAxiosError).response?.status;
     }
 
@@ -111,7 +111,7 @@ class Logger implements ILogger {
   }
 
   info(message: string, properties?: Props): void {
-    const traceIds = this.getTraceIds(properties?.context);
+    const traceIds = this.getTraceIds(properties?.context as InvocationContext);
     delete properties?.context;
 
     this.loggerInstance.info(message, {
@@ -123,7 +123,7 @@ class Logger implements ILogger {
   }
 
   log(message: string, properties?: Props): void {
-    const traceIds = this.getTraceIds(properties?.context);
+    const traceIds = this.getTraceIds(properties?.context as InvocationContext);
     delete properties?.context;
 
     this.loggerInstance.log(LOG_LEVELS.INFO, message, {
@@ -135,7 +135,7 @@ class Logger implements ILogger {
   }
 
   warn(message: string, properties?: Props): void {
-    const traceIds = this.getTraceIds(properties?.context);
+    const traceIds = this.getTraceIds(properties?.context as InvocationContext);
     delete properties?.context;
 
     this.loggerInstance.log(LOG_LEVELS.WARNING, message, {
@@ -147,7 +147,7 @@ class Logger implements ILogger {
   }
 
   event(name: string, message?: string, properties?: Props): void {
-    const traceIds = this.getTraceIds(properties?.context);
+    const traceIds = this.getTraceIds(properties?.context as InvocationContext);
     delete properties?.context;
 
     this.loggerInstance.log(LOG_LEVELS.EVENT, message || '', {
@@ -160,7 +160,7 @@ class Logger implements ILogger {
   }
 
   dependency(name: string, data?: string, properties?: Props): void {
-    const traceIds = this.getTraceIds(properties?.context);
+    const traceIds = this.getTraceIds(properties?.context as InvocationContext);
     delete properties?.context;
 
     this.loggerInstance.log(LOG_LEVELS.DEPENDENCY, name || 'Dependency', {
@@ -174,7 +174,7 @@ class Logger implements ILogger {
   }
 
   request(name: string, properties?: Props): void {
-    const traceIds = this.getTraceIds(properties?.context);
+    const traceIds = this.getTraceIds(properties?.context as InvocationContext);
     delete properties?.context;
 
     this.loggerInstance.log(LOG_LEVELS.REQUEST, name || 'Request', {
@@ -187,7 +187,7 @@ class Logger implements ILogger {
   }
 
   pageView(name: string, properties?: Props): void {
-    const traceIds = this.getTraceIds(properties?.context);
+    const traceIds = this.getTraceIds(properties?.context as InvocationContext);
     delete properties?.context;
 
     this.loggerInstance.log(LOG_LEVELS.PAGE_VIEW, name || 'Page View', {
@@ -199,7 +199,7 @@ class Logger implements ILogger {
     });
   }
 
-  private getTraceIds(context: Context): object {
+  private getTraceIds(context: InvocationContext): object {
     if (context) {
       return {
         operationId: getOperationId(context),
@@ -231,6 +231,7 @@ class Logger implements ILogger {
           componentName: this.componentName,
           level: config.logs.level,
         }),
+
       );
     }
     return transports;

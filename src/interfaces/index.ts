@@ -60,7 +60,7 @@ export interface RequestInfo {
   url: string;
   source?: string;
   duration: number;
-  resultCode: string | number;
+  resultCode: string;
   success: boolean;
   componentName: string;
   operationId: string;

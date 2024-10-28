@@ -1,15 +1,15 @@
-import { Context } from '@azure/functions';
+import { InvocationContext } from '@azure/functions';
 
-function getServiceBusOperationId(context: Context): string | undefined {
-  if (context?.bindingData?.applicationProperties?.operationId) {
-    return context?.bindingData?.applicationProperties?.operationId;
+function getServiceBusOperationId(context: InvocationContext): string | undefined { // needs investigation
+  if (context && context.traceContext?.traceParent) {
+    return context.traceContext?.traceParent;
   }
   return undefined;
 }
 
-function getServiceBusParentId(context: Context): string | undefined {
-  if (context?.bindingData?.applicationProperties?.parentId) {
-    return context?.bindingData?.applicationProperties?.parentId;
+function getServiceBusParentId(context: InvocationContext): string | undefined {
+  if (context && context.traceContext?.traceParent) {
+    return context.traceContext?.traceParent;
   }
   return undefined;
 }
