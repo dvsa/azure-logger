@@ -1,11 +1,11 @@
-import { Context } from '@azure/functions';
-import Traceparent from 'applicationinsights/out/Library/Traceparent';
+import { InvocationContext } from '@azure/functions';
+import crypto from 'crypto';
 
-function getOperationId(context: Context): string {
-  if (!context.traceContext || !context.traceContext.traceparent) {
-    return new Traceparent(undefined).traceId;
+function getOperationId(context: InvocationContext): string {
+  if (!context.traceContext || !context.traceContext.traceParent) {
+    return crypto.randomBytes(64).toString('hex').substring(0, 31);
   }
-  return new Traceparent(context.traceContext.traceparent).traceId;
+  return context.traceContext.traceParent;
 }
 
 export default getOperationId;

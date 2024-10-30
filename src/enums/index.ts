@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 export enum LOG_LEVELS {
   CRITICAL = 'critical',
   ERROR = 'error',
@@ -18,5 +19,5 @@ export enum APP_INSIGHTS_LOG_LEVELS {
   EVENT = 'event',
   REQUEST = 'request',
   DEPENDENCY = 'dependency',
-  PAGE_VIEW = 'pageView'
+  PAGE_VIEW = 'pageView',
 }

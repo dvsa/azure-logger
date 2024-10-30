@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { InvocationContext } from '@azure/functions';
 import winston from 'winston';
 import Logger from '../../src/logger';
 import ApplicationInsightsTransport from '../../src/applicationInsightsTransport';
@@ -17,7 +18,7 @@ jest.mock('../../src/config', () => ({
 describe('Logger', () => {
   let loggerInstance: Logger;
   let mockCreateLogger;
-  const mockLogger: any = {
+  const mockLogger: Logger = {
     error: jest.fn(),
     debug: jest.fn(),
     info: jest.fn(),
@@ -25,12 +26,12 @@ describe('Logger', () => {
     warn: jest.fn(),
     request: jest.fn(),
     dependency: jest.fn(),
-  };
-  const mockContext: any = {
+  } as unknown as Logger;
+  const mockContext: InvocationContext = {
     traceContext: {
-      traceparent: '00-763230142f4317478bf6bdcee3886ef0-2839ff750bf4cc46-00',
+      traceParent: '763230142f4317478bf6bdcee3886ef0',
     },
-  };
+  } as unknown as InvocationContext;
   const logMessage = 'test log message';
   const logProps = { componentName: 'azure-logger', projectName: 'DVSA' };
 
