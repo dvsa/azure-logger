@@ -3,7 +3,9 @@
 // Also the function invocation accepts args of any type
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
-  startOperation, wrapWithCorrelationContext, defaultClient, azureFunctionsTypes,
+  startOperation,
+  wrapWithCorrelationContext,
+  defaultClient,
 } from 'applicationinsights';
 import { InvocationContext, HttpRequest, HttpResponseInit } from '@azure/functions';
 
@@ -17,7 +19,7 @@ import { InvocationContext, HttpRequest, HttpResponseInit } from '@azure/functio
  */
 export const nonHttpTriggerContextWrapper = async (fn: Function, context: InvocationContext, ...args: unknown[]): Promise<HttpResponseInit> => {
   const operationName = context.functionName || '';
-  const correlationContext = startOperation(context as azureFunctionsTypes.Context, operationName);
+  const correlationContext = startOperation(context as any, operationName);
 
   return wrapWithCorrelationContext(async () => {
     const result = await fn(context, ...args) as HttpResponseInit;
@@ -38,7 +40,7 @@ export const nonHttpTriggerContextWrapper = async (fn: Function, context: Invoca
  */
 export const httpTriggerContextWrapper = async (fn: Function, context: InvocationContext, req: HttpRequest): Promise<HttpResponseInit> => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-  const correlationContext = startOperation(context as azureFunctionsTypes.Context, req as any);
+  const correlationContext = startOperation(context as any, req as any);
 
   return wrapWithCorrelationContext(async () => {
     const result = await fn(context, req) as HttpResponseInit;

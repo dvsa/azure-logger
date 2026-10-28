@@ -1,13 +1,10 @@
 import * as applicationInsights from 'applicationinsights';
 import {
+  Contracts,
   DistributedTracingModes,
+  KnownSeverityLevel,
   TelemetryClient,
 } from 'applicationinsights';
-import {
-  EventTelemetry,
-  ExceptionTelemetry,
-  SeverityLevel,
-} from 'applicationinsights/out/Declarations/Contracts';
 import {
   DefaultAzureCredential,
   type TokenCredential,
@@ -115,17 +112,17 @@ class ApplicationInsightsTransport extends Transport {
   };
 
   severityLevelMap = {
-    [LOG_LEVELS.AUDIT]: SeverityLevel.Verbose,
-    [LOG_LEVELS.CRITICAL]: SeverityLevel.Critical,
-    [LOG_LEVELS.DEBUG]: SeverityLevel.Verbose,
-    [LOG_LEVELS.ERROR]: SeverityLevel.Error,
-    [LOG_LEVELS.EVENT]: SeverityLevel.Information,
-    [LOG_LEVELS.INFO]: SeverityLevel.Information,
-    [LOG_LEVELS.SECURITY]: SeverityLevel.Information,
-    [LOG_LEVELS.WARNING]: SeverityLevel.Warning,
-    [LOG_LEVELS.DEPENDENCY]: SeverityLevel.Information,
-    [LOG_LEVELS.REQUEST]: SeverityLevel.Information,
-    [LOG_LEVELS.PAGE_VIEW]: SeverityLevel.Information,
+    [LOG_LEVELS.AUDIT]: KnownSeverityLevel.Verbose,
+    [LOG_LEVELS.CRITICAL]: KnownSeverityLevel.Critical,
+    [LOG_LEVELS.DEBUG]: KnownSeverityLevel.Verbose,
+    [LOG_LEVELS.ERROR]: KnownSeverityLevel.Error,
+    [LOG_LEVELS.EVENT]: KnownSeverityLevel.Information,
+    [LOG_LEVELS.INFO]: KnownSeverityLevel.Information,
+    [LOG_LEVELS.SECURITY]: KnownSeverityLevel.Information,
+    [LOG_LEVELS.WARNING]: KnownSeverityLevel.Warning,
+    [LOG_LEVELS.DEPENDENCY]: KnownSeverityLevel.Information,
+    [LOG_LEVELS.REQUEST]: KnownSeverityLevel.Information,
+    [LOG_LEVELS.PAGE_VIEW]: KnownSeverityLevel.Information,
   };
 
   constructor(options: ApplicationInsightsTransportOptions) {
@@ -156,8 +153,7 @@ class ApplicationInsightsTransport extends Transport {
       );
 
     if (credential) {
-      applicationInsights.defaultClient.config.aadTokenCredential =
-        credential;
+      (applicationInsights.defaultClient.config as any).aadTokenCredential = credential;
     }
 
     applicationInsights.start();
@@ -166,7 +162,7 @@ class ApplicationInsightsTransport extends Transport {
 
     this.client.context.tags[
       this.client.context.keys.cloudRole
-      ] = options.componentName;
+    ] = options.componentName;
 
     this.client.context.tags['X-Azure-Ref'] = '';
     this.client.context.tags['INCAP-REQ-ID'] = '';
@@ -181,6 +177,26 @@ class ApplicationInsightsTransport extends Transport {
       options.componentName,
     );
   }
+
+  private createTrace(info: TraceInfo): void {
+    const {
+      message, meta, operationId, ...otherProperties
+    } = info;
+
+    this.client.trackTrace({
+      severity: this.severityLevelMap[info.level],
+      message: info.message,
+      properties: {
+        ...otherProperties,
+        operationId: info.sbOperationId || info.operationId,
+        sessionId: info.sessionId,
+        userId: info.userId,
+        userAuthUserId: info.userAuthUserId,
+        userAccountId: info.userAccountId,
+      },
+    });
+  }
+
   log(info: LogInfo, callback: Function): void {
     switch (this.logLevelsMap[info.level]) {
       case APP_INSIGHTS_LOG_LEVELS.EVENT:
@@ -203,29 +219,8 @@ class ApplicationInsightsTransport extends Transport {
         this.createTrace(info as TraceInfo);
         break;
     }
+
     callback();
-  }
-
-  private createTrace(info: TraceInfo): void {
-    const {
-      message, meta, operationId, ...otherProperties
-    } = info;
-
-    this.client.trackTrace({
-      severity: this.severityLevelMap[info.level],
-      message: info.message,
-      tagOverrides: {
-        [this.client.context.keys.operationId]:
-          info.sbOperationId || info.operationId,
-        [this.client.context.keys.sessionId]: info.sessionId,
-        [this.client.context.keys.userId]: info.userId,
-        [this.client.context.keys.userAuthUserId]: info.userAuthUserId,
-        [this.client.context.keys.userAccountId]: info.userAccountId,
-      },
-      properties: {
-        ...otherProperties,
-      },
-    });
   }
 
   private createException(info: ExceptionInfo): void {
@@ -233,24 +228,23 @@ class ApplicationInsightsTransport extends Transport {
       error, message, level, meta, operationId, ...otherProperties
     } = info;
 
-    const exception: ExceptionTelemetry = {
-      severity: SeverityLevel.Error,
+    const messageText = typeof message === 'string' ? message : '';
+
+    const exception: Contracts.ExceptionTelemetry = {
+      severity: KnownSeverityLevel.Error,
       exception: error,
-      tagOverrides: {
-        [this.client.context.keys.operationId]:
-          info.sbOperationId || info.operationId,
-        [this.client.context.keys.sessionId]: info.sessionId,
-        [this.client.context.keys.userId]: info.userId,
-        [this.client.context.keys.userAuthUserId]: info.userAuthUserId,
-        [this.client.context.keys.userAccountId]: info.userAccountId,
-      },
       properties: {
         ...otherProperties,
+        operationId: info.sbOperationId || info.operationId,
+        sessionId: info.sessionId,
+        userId: info.userId,
+        userAuthUserId: info.userAuthUserId,
+        userAccountId: info.userAccountId,
       },
     };
 
-    if (exception.properties && message.trim().length > 0) {
-      exception.properties.message = message;
+    if (exception.properties && messageText.trim().length > 0) {
+      exception.properties.message = messageText;
     }
 
     this.client.trackException(exception);
@@ -261,74 +255,86 @@ class ApplicationInsightsTransport extends Transport {
       name, message, meta, level, operationId, ...otherProperties
     } = info;
 
-    const event: EventTelemetry = {
+    const messageText = typeof message === 'string' ? message : '';
+
+    const event: Contracts.EventTelemetry = {
       name,
-      tagOverrides: {
-        [this.client.context.keys.operationId]:
-          info.sbOperationId || info.operationId,
-        [this.client.context.keys.sessionId]: info.sessionId,
-        [this.client.context.keys.userId]: info.userId,
-        [this.client.context.keys.userAuthUserId]: info.userAuthUserId,
-        [this.client.context.keys.userAccountId]: info.userAccountId,
-      },
       properties: {
         ...otherProperties,
+        operationId: info.sbOperationId || info.operationId,
+        sessionId: info.sessionId,
+        userId: info.userId,
+        userAuthUserId: info.userAuthUserId,
+        userAccountId: info.userAccountId,
       },
     };
 
-    if (event.properties && message.trim().length > 0) {
-      event.properties.message = message;
+    if (event.properties && messageText.trim().length > 0) {
+      event.properties.message = messageText;
     }
 
     this.client.trackEvent(event);
   }
 
   private createDependency(info: DependencyInfo): void {
-    const dependency = {
+    const dependency: Contracts.DependencyTelemetry = {
       ...info,
-      tagOverrides: {
-        [this.client.context.keys.operationId]:
-          info.sbOperationId || info.operationId,
-        [this.client.context.keys.sessionId]: info.sessionId,
-        [this.client.context.keys.userId]: info.userId,
-        [this.client.context.keys.userAuthUserId]: info.userAuthUserId,
-        [this.client.context.keys.userAccountId]: info.userAccountId,
+      duration: info.duration,
+      success: info.success,
+      resultCode: String(info.resultCode),
+      dependencyTypeName: info.dependencyTypeName,
+      name: info.name,
+      data: info.data,
+      properties: {
+        ...info,
+        operationId: info.sbOperationId || info.operationId,
+        sessionId: info.sessionId,
+        userId: info.userId,
+        userAuthUserId: info.userAuthUserId,
+        userAccountId: info.userAccountId,
       },
     };
 
-    this.client.trackDependency(dependency);
+    this.client.trackDependency(dependency as any);
   }
 
   private createRequest(info: RequestInfo): void {
-    const request = {
+    const request: Contracts.RequestTelemetry = {
       ...info,
-      tagOverrides: {
-        [this.client.context.keys.operationId]:
-          info.sbOperationId || info.operationId,
-        [this.client.context.keys.sessionId]: info.sessionId,
-        [this.client.context.keys.userId]: info.userId,
-        [this.client.context.keys.userAuthUserId]: info.userAuthUserId,
-        [this.client.context.keys.userAccountId]: info.userAccountId,
+      duration: info.duration,
+      success: info.success,
+      resultCode: info.resultCode,
+      name: info.name,
+      url: info.url,
+      properties: {
+        ...info,
+        operationId: info.sbOperationId || info.operationId,
+        sessionId: info.sessionId,
+        userId: info.userId,
+        userAuthUserId: info.userAuthUserId,
+        userAccountId: info.userAccountId,
       },
     };
 
-    this.client.trackRequest(request);
+    this.client.trackRequest(request as any);
   }
 
   private createPageView(info: PageViewInfo): void {
-    const pageView = {
-      ...info,
-      tagOverrides: {
-        [this.client.context.keys.operationId]:
-          info.sbOperationId || info.operationId,
-        [this.client.context.keys.sessionId]: info.sessionId,
-        [this.client.context.keys.userId]: info.userId,
-        [this.client.context.keys.userAuthUserId]: info.userAuthUserId,
-        [this.client.context.keys.userAccountId]: info.userAccountId,
+    const pageView: Contracts.PageViewTelemetry = {
+      id: info.name,
+      name: info.name,
+      duration: 0,
+      properties: {
+        ...info,
+        operationId: info.sbOperationId || info.operationId,
+        sessionId: info.sessionId,
+        userId: info.userId,
+        userAuthUserId: info.userAuthUserId,
+        userAccountId: info.userAccountId,
       },
     };
 
-    this.client.trackPageView(pageView);
+    this.client.trackPageView(pageView as any);
   }
 
   private sendStartupTelemetry(
@@ -343,18 +349,13 @@ class ApplicationInsightsTransport extends Transport {
       message: usingMicrosoftEntra
         ? 'Application Insights configured using Microsoft Entra authentication'
         : 'Application Insights configured using connection string authentication',
-      severity: SeverityLevel.Information,
+      severity: KnownSeverityLevel.Information,
       properties: {
         componentName,
         authenticationMode,
         source: '@dvsa/azure-logger',
         startup: 'true',
-      },
-      tagOverrides: {
-        [this.client.context.keys.cloudRole]:
-        componentName,
-        [this.client.context.keys.operationName]:
-          `${componentName} startup`,
+        operationName: `${componentName} startup`,
       },
     });
   }
