@@ -197,10 +197,38 @@ class ApplicationInsightsTransport extends Transport {
     });
   }
 
+  log(info: LogInfo, callback: Function): void {
+    switch (this.logLevelsMap[info.level]) {
+      case APP_INSIGHTS_LOG_LEVELS.EVENT:
+        this.createEvent(info as EventInfo);
+        break;
+      case APP_INSIGHTS_LOG_LEVELS.EXCEPTION:
+        this.createException(info as ExceptionInfo);
+        break;
+      case APP_INSIGHTS_LOG_LEVELS.DEPENDENCY:
+        this.createDependency(info as DependencyInfo);
+        break;
+      case APP_INSIGHTS_LOG_LEVELS.REQUEST:
+        this.createRequest(info as RequestInfo);
+        break;
+      case APP_INSIGHTS_LOG_LEVELS.PAGE_VIEW:
+        this.createPageView(info as PageViewInfo);
+        break;
+      case APP_INSIGHTS_LOG_LEVELS.TRACE:
+      default:
+        this.createTrace(info as TraceInfo);
+        break;
+    }
+
+    callback();
+  }
+
   private createException(info: ExceptionInfo): void {
     const {
       error, message, level, meta, operationId, ...otherProperties
     } = info;
+
+    const messageText = typeof message === 'string' ? message : '';
 
     const exception: Contracts.ExceptionTelemetry = {
       severity: KnownSeverityLevel.Error,
@@ -215,8 +243,8 @@ class ApplicationInsightsTransport extends Transport {
       },
     };
 
-    if (exception.properties && message.trim().length > 0) {
-      exception.properties.message = message;
+    if (exception.properties && messageText.trim().length > 0) {
+      exception.properties.message = messageText;
     }
 
     this.client.trackException(exception);
@@ -226,6 +254,8 @@ class ApplicationInsightsTransport extends Transport {
     const {
       name, message, meta, level, operationId, ...otherProperties
     } = info;
+
+    const messageText = typeof message === 'string' ? message : '';
 
     const event: Contracts.EventTelemetry = {
       name,
@@ -239,8 +269,8 @@ class ApplicationInsightsTransport extends Transport {
       },
     };
 
-    if (event.properties && message.trim().length > 0) {
-      event.properties.message = message;
+    if (event.properties && messageText.trim().length > 0) {
+      event.properties.message = messageText;
     }
 
     this.client.trackEvent(event);
